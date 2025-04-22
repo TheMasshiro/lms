@@ -9,7 +9,7 @@ export const AppContextProvider = ({ children }) => {
     const currency = import.meta.env.VITE_CURRENCY || "PHP";
     const navigate = useNavigate()
 
-    const [isEducator,setIsEducator] = useState(true)
+    const [isEducator,setIsEducator] = useState(false)
     const [allCourses, setAllCourses] = useState([])
     const [enrolledCourses, setEnrolledCourses] = useState([])
 
