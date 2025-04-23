@@ -6,10 +6,10 @@ import { UserButton, useUser } from '@clerk/clerk-react';
 
 const navbar = () => {
 
-  const educatorData = dummyEducatorData
+  const { isEducator } = useContext(AppContext);
   const {user} = useUser()
 
-  return (
+  return isEducator && user && (
     <div className={`flex items-center justify-between px-4 md:px-8 border-b border-gray-500 py-3`}>
       <Link to="/">
         <img src={assets.logo} alt="Logo" className="w-28 lg:w-32" />
