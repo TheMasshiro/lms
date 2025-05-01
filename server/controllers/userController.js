@@ -2,8 +2,7 @@ import Course from "../models/Course.js"
 import { CourseProgress } from "../models/CourseProgress.js"
 import { Purchase } from "../models/Purchase.js"
 import User from "../models/User.js"
-import stripe from "stripe"
-
+import axios from "axios"
 
 
 // Get User Data
@@ -27,64 +26,84 @@ export const getUserData = async (req, res) => {
 
 // Purchase Course 
 export const purchaseCourse = async (req, res) => {
-
     try {
+        const { courseId } = req.body;
+        const { origin } = req.headers;
+        const userId = req.auth.userId;
 
-        const { courseId } = req.body
-        const { origin } = req.headers
-
-
-        const userId = req.auth.userId
-
-        const courseData = await Course.findById(courseId)
-        const userData = await User.findById(userId)
+        const courseData = await Course.findById(courseId);
+        const userData = await User.findById(userId);
 
         if (!userData || !courseData) {
-            return res.json({ success: false, message: 'Data Not Found' })
+            return res.json({ success: false, message: 'Data Not Found' });
         }
+
+        const computedAmount = courseData.coursePrice - (courseData.discount * courseData.coursePrice / 100);
+        const amountInCentavos = Math.round(computedAmount * 100);
 
         const purchaseData = {
             courseId: courseData._id,
             userId,
-            amount: (courseData.coursePrice - courseData.discount * courseData.coursePrice / 100).toFixed(2),
-        }
+            amount: computedAmount.toFixed(2),
+        };
 
-        const newPurchase = await Purchase.create(purchaseData)
+        const newPurchase = await Purchase.create(purchaseData);
 
-        // Stripe Gateway Initialize
-        const stripeInstance = new stripe(process.env.STRIPE_SECRET_KEY)
+        const courseName = courseData.courseTitle || "Course Purchase";
 
-        const currency = process.env.CURRENCY.toLocaleLowerCase()
+        const currency = (process.env.CURRENCY || "PHP").toUpperCase();
 
-        // Creating line items to for Stripe
-        const line_items = [{
-            price_data: {
-                currency,
-                product_data: {
-                    name: courseData.courseTitle
-                },
-                unit_amount: Math.floor(newPurchase.amount) * 100
+        const lineItems = [{
+            currency: currency,
+            amount: amountInCentavos,
+            description: courseName,
+            name: courseName,
+            quantity: 1,
+        }];
+
+        const checkoutSessionRes = await axios.post(
+            'https://api.paymongo.com/v1/checkout_sessions',
+            {
+                data: {
+                    attributes: {
+                        billing: {
+                            name: userData.name || "Full Name",
+                            email: userData.email || "email@example.com",
+                        },
+                        description: courseName,
+                        send_email_receipt: true,
+                        show_description: true,
+                        show_line_items: true,
+                        line_items: lineItems,
+                        payment_method_types: ['gcash', 'card', 'paymaya', 'grab_pay'],
+                        cancel_url: `${origin}/`,
+                        success_url: `${origin}/`,
+                        metadata: {
+                            purchaseId: newPurchase._id.toString()
+                        }
+                    }
+                }
             },
-            quantity: 1
-        }]
-
-        const session = await stripeInstance.checkout.sessions.create({
-            success_url: `${origin}/loading/my-enrollments`,
-            cancel_url: `${origin}/`,
-            line_items: line_items,
-            mode: 'payment',
-            metadata: {
-                purchaseId: newPurchase._id.toString()
+            {
+                headers: {
+                    Authorization: `Basic ${Buffer.from(process.env.PAYMONGO_SECRET_KEY + ':').toString('base64')}`,
+                    'Content-Type': 'application/json'
+                }
             }
-        })
+        );
 
-        res.json({ success: true, session_url: session.url });
-
+        const sessionUrl = checkoutSessionRes.data.data.attributes.checkout_url;
+        res.json({ success: true, session_url: sessionUrl });
 
     } catch (error) {
-        res.json({ success: false, message: error.message });
+        console.error('Purchase Error:', error?.response?.data || error.message);
+        res.status(500).json({
+            success: false,
+            message: error?.response?.data?.errors?.[0]?.detail || error.message,
+            errors: error?.response?.data?.errors || []
+        });
     }
-}
+};
 
 // Users Enrolled Courses With Lecture Links
 export const userEnrolledCourses = async (req, res) => {
