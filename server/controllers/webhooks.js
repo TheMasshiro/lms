@@ -83,10 +83,26 @@ export const paymongoWebhooks = async (request, response) => {
 
     switch (event.type) {
       case 'payment.paid': {
-        //const paymentData = event.data.attributes;
-        //const paymentId = event.data.id;
-        //console.log('Payment ID:', paymentId);
-        //console.log('Payment Data:', paymentData);
+        const paymentIntentId = event.resource.attributes.payment_intent_id;
+        const paymentIntent = await paymongoInstance.paymentIntents.retrieve(paymentIntentId);
+
+        const metadata = paymentIntent.attributes.metadata;
+        const purchaseId = metadata.purchaseId;
+
+        const purchaseData = await Purchase.findById(purchaseId)
+        const userData = await User.findById(purchaseData.userId)
+        const courseData = await Course.findById(purchaseData.courseId.toString())
+
+        courseData.enrolledStudents.push(userData)
+        await courseData.save()
+  
+        userData.enrolledCourses.push(courseData._id)
+        await userData.save()
+  
+        purchaseData.status = 'completed'
+        await purchaseData.save()
+  
+        break;
       }
 
       case 'payment.failed':{
