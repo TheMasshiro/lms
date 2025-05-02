@@ -86,6 +86,9 @@ export const paymongoWebhooks = async (request, response) => {
         const paymentIntentId = event.resource.attributes.payment_intent_id;
         const paymentIntent = await paymongoInstance.paymentIntents.retrieve(paymentIntentId);
 
+        console.log('Payment Intent:', paymentIntent);
+        console.log('Payment Intent ID:', paymentIntentId);
+
         const metadata = paymentIntent.attributes.metadata;
         const purchaseId = metadata.purchaseId;
 
@@ -99,7 +102,7 @@ export const paymongoWebhooks = async (request, response) => {
         userData.enrolledCourses.push(courseData._id)
         await userData.save()
   
-        purchaseData.status = 'completed'
+        purchaseData.status = 'paid'
         await purchaseData.save()
   
         break;
