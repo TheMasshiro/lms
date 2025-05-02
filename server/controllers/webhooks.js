@@ -2,7 +2,7 @@ import { Webhook } from "svix";
 import User from "../models/User.js";
 import { Purchase } from "../models/Purchase.js";
 import Course from "../models/Course.js";
-import paymongo from 'paymongo-node';
+import paymongoPackage from 'paymongo-node';
 
 
 // API Controller Function to Manage Clerk User with database
@@ -62,26 +62,31 @@ export const clerkWebhooks = async (req, res) => {
   }
 }
 
-// PayMongo Webhooks to Manage Payments Action
+
+const paymongo = paymongoPackage(process.env.PAYMONGO_SECRET_KEY);
+
+// PayMongo Webhooks Handler function
 export const paymongoWebhooks = async (request, response) => {
   const signature = request.headers['paymongo-signature'];
+  
+  if (!signature) {
+    console.error('Missing PayMongo signature');
+    return response.status(400).send('Missing signature');
+  }
+
   const rawBody = request.body.toString('utf8');
-
-  let event;
-
+  
+  console.log("Paymongo Webhook Signature:", signature);
+  console.log("Paymongo Webhook Headers:", request.headers);
+  
   try {
-    event = paymongo.Webhooks.constructEvent({
+    const event = paymongo.webhooks.constructEvent({
       payload: rawBody,
       signatureHeader: signature,
       webhookSecretKey: process.env.PAYMONGO_WEBHOOK_SECRET,
     });
-
-    console.log("Received event:", event);
-    console.log("Event type:", event.type);
-    cosnole.log("Event data:", event.data);
-    console.log("Event object:", event.object);
-    console.log("Raw body:", rawBody);
-    console.log("Signature header:", signature);
+    
+    console.log("Webhook Event Received:", event.type);
     
     response.status(200).json({ received: true });
   } catch (err) {
