@@ -63,24 +63,10 @@ export const clerkWebhooks = async (req, res) => {
 }
 
 // PayMongo Webhooks to Manage Payments Action
-export const paymongoWebhooks = async (req, res) => {
- console.log("Paymongo Webhook Triggered")
-  try {
-    const { type, data } = req.body;
-    const secret = process.env.PAYMONGO_WEBHOOK_SECRET;
-    const signature = req.headers['paymongo-signature'];
-  } catch (error) {
-    console.error("Error in Paymongo Webhook:", error.message);
-    res.status(500).json({ success: false, message: error.message });
-  }
-  const hmac = crypto.createHmac('sha256', secret);
-  hmac.update(JSON.stringify(req.body), 'utf8');
-  const digest = hmac.digest('hex');
-  if (digest !== signature) {
-    return res.status(401).json({ success: false, message: 'Invalid signature' });
-  }
-  console.log("Signature Verified")
-  const { type, data } = req.body;
-  console.log("Type:", type)
-  console.log("Data:", data)
+export const paymongoWebhooks = async (request, res) => {
+  console.log("Paymongo Webhook Triggered")
+  console.log(request.body)
+  console.log(request.headers)
+  console.log(request.rawBody)
+  console.log(request.body.data.attributes.event)
 }
