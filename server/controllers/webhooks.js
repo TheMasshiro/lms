@@ -63,68 +63,60 @@ export const clerkWebhooks = async (req, res) => {
 }
 
 // PayMongo Webhooks to Manage Payments Action
-export const paymongoWebhooks = async (request, response) => {
-  const signature = request.headers['x-paymongo-signature'];
-  const payload = request.body;
-  let event;
-  
-  try {
-    // Verify webhook signature
-    const webhookSecret = process.env.PAYMONGO_WEBHOOK_SECRET;
-    const hmac = crypto.createHmac('sha256', webhookSecret);
-    const digest = hmac.update(JSON.stringify(payload)).digest('hex');
-    
-    if (digest !== signature) {
-      throw new Error('Invalid signature');
-    }
-    
-    event = payload;
+export const paymongoWebhooks = async (req, res) => {
+  const signatureHeader = req.headers['paymongo-signature'];
+  const rawBody = JSON.stringify(req.body);
+
+  const secret = process.env.PAYMONGO_WEBHOOK_SECRET;
+  const [timestamp, signature] = signatureHeader.split(',');
+
+  const signedPayload = `${timestamp}.${rawBody}`;
+  const hmac = crypto.createHmac('sha256', secret);
+  hmac.update(signedPayload);
+  const expectedSignature = hmac.digest('hex');
+
+  if (expectedSignature !== signature) {
+    return res.status(400).send('Webhook signature verification failed');
   }
-  catch (err) {
-    response.status(400).send(`Webhook Error: ${err.message}`);
-    return;
-  }
-  
-  // Handle the event
-  switch (event.data.attributes.type) {
+
+  const event = req.body;
+
+  switch (event.type) {
     case 'payment.paid': {
-      const payment = event.data.attributes;
-      const paymentId = event.data.id;
-      
-      const purchaseId = payment.metadata?.purchaseId;
-      
-      if (purchaseId) {
-        const purchaseData = await Purchase.findById(purchaseId);
-        const userData = await User.findById(purchaseData.userId);
-        const courseData = await Course.findById(purchaseData.courseId.toString());
-        
-        courseData.enrolledStudents.push(userData);
-        await courseData.save();
-        
-        userData.enrolledCourses.push(courseData._id);
-        await userData.save();
-        
-        purchaseData.status = 'completed';
-        await purchaseData.save();
-      }
+      const desc = paymentData.description;
+      const match = desc.match(/purchase:([a-f\d]{24})/);
+      const purchaseId = match ? match[1] : null;
+
+      const purchase = await Purchase.findById(purchaseId);
+      const user = await User.findById(purchase.userId);
+      const course = await Course.findById(purchase.courseId.toString());
+
+      course.enrolledStudents.push(user);
+      await course.save();
+
+      user.enrolledCourses.push(course._id);
+      await user.save();
+
+      purchase.status = 'completed';
+      await purchase.save();
+
       break;
     }
-    case 'payment.failed':
-    case 'source.chargeable.expired':
+
     case 'payment.failed': {
-      const payment = event.data.attributes;
-      const purchaseId = payment.metadata?.purchaseId;
-      
-      if (purchaseId) {
-        const purchaseData = await Purchase.findById(purchaseId);
-        purchaseData.status = 'failed';
-        await purchaseData.save();
-      }
+      const paymentData = event.data.attributes;
+      const purchaseId = paymentData.description;
+
+      const purchase = await Purchase.findById(purchaseId);
+      purchase.status = 'failed';
+      await purchase.save();
+
       break;
     }
+
     default:
-      console.log(`Unhandled event type ${event.data.attributes.type}`);
+      console.log(`Unhandled event type ${event.type}`);
   }
-  
-  response.json({ received: true });
-};
+
+  res.json({ received: true });
+}

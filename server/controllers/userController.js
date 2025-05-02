@@ -70,7 +70,7 @@ export const purchaseCourse = async (req, res) => {
                             name: userData.name || "Full Name",
                             email: userData.email || "email@example.com",
                         },
-                        description: courseName,
+                        description: newPurchase._id.toString(),
                         send_email_receipt: true,
                         show_description: true,
                         show_line_items: true,
