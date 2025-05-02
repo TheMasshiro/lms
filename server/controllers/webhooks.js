@@ -83,13 +83,7 @@ export const paymongoWebhooks = async (request, response) => {
 
     switch (event.type) {
       case 'payment.paid': {
-        const paymentIntentId = event.resource.attributes.payment_intent_id;
-        const paymentIntent = await paymongoInstance.paymentIntents.retrieve(paymentIntentId);
-
-        console.log('Payment Intent:', paymentIntent);
-        console.log('Payment Intent ID:', paymentIntentId);
-
-        const metadata = paymentIntent.attributes.metadata;
+        const metadata = event.resource.attributes.metadata;
         const purchaseId = metadata.purchaseId;
 
         const purchaseData = await Purchase.findById(purchaseId)
