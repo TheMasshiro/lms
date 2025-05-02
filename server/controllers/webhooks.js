@@ -72,4 +72,5 @@ export const paymongoWebhooks = async (request, response) => {
   console.log("Request Body:", request.body)
   console.log("Request Body String:", request.body.toString('utf8'))
   console.log("Request Raw Body String:", request.rawBody.toString('utf8'))
+  console.log("Payment Type", request.jsonBody.data.attributes.type)
 }
