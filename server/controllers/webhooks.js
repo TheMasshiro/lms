@@ -69,6 +69,9 @@ const paymongoInstance = paymongoPackage(process.env.PAYMONGO_SECRET_KEY);
 export const paymongoWebhooks = async (request, response) => {
   const signature = request.headers['paymongo-signature'];
   const rawBody = request.body.toString('utf8');
+
+  console.log('Received PayMongo Webhook:', rawBody);
+  console.log('Signature:', signature);
   
   
   try {
@@ -90,9 +93,12 @@ export const paymongoWebhooks = async (request, response) => {
 
       }
     }
+
+    console.log('Event:', event);
     
     response.status(200).json({ received: true });
   } catch (err) {
+    console.error('Error processing webhook:', err.message);
     response.status(400).send(`Webhook Error: ${err.message}`);
   }
 }
