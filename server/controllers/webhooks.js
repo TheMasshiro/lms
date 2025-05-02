@@ -69,10 +69,6 @@ const paymongoInstance = paymongoPackage(process.env.PAYMONGO_SECRET_KEY);
 export const paymongoWebhooks = async (request, response) => {
   const signature = request.headers['paymongo-signature'];
   const rawBody = request.body.toString('utf8');
-
-  console.log('Received PayMongo Webhook:', rawBody);
-  console.log('Signature:', signature);
-  
   
   try {
     const event = paymongoInstance.webhooks.constructEvent({
@@ -101,10 +97,17 @@ export const paymongoWebhooks = async (request, response) => {
   
         break;
       }
-
       case 'payment.failed':{
+        const metadata = event.resource.attributes.metadata;
+        const purchaseId = metadata.purchaseId;
 
+        const purchaseData = await Purchase.findById(purchaseId)
+        purchaseData.status = 'failed'
+        await purchaseData.save()
+        break;
       }
+      default:
+        console.log(`Unhandled event type ${event.type}`);
     }
 
     console.log('Event:', event);
