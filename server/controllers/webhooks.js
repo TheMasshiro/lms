@@ -65,18 +65,23 @@ export const clerkWebhooks = async (req, res) => {
 // PayMongo Webhooks to Manage Payments Action
 export const paymongoWebhooks = async (req, res) => {
   const signatureHeader = req.headers['paymongo-signature'];
-  const rawBody = JSON.stringify(req.body);
-
   const secret = process.env.PAYMONGO_WEBHOOK_SECRET;
+  
+  if (!signatureHeader || !secret || !req.rawBody) {
+    return res.status(400).send('Missing headers or raw body');
+  }
+  
   const [timestamp, signature] = signatureHeader.split(',');
-
-  const signedPayload = `${timestamp}.${rawBody}`;
-  const hmac = crypto.createHmac('sha256', secret);
-  hmac.update(signedPayload);
-  const expectedSignature = hmac.digest('hex');
-
+  const signedPayload = `${timestamp}.${req.rawBody}`;
+  
+  const expectedSignature = crypto
+    .createHmac('sha256', secret)
+    .update(signedPayload)
+    .digest('hex');
+  
   if (expectedSignature !== signature) {
-    return res.status(400).send('Webhook signature verification failed');
+    console.log('Signature mismatch:', expectedSignature, signature);
+    return res.status(400).send('Invalid signature');
   }
 
   const event = req.body;
