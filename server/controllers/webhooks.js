@@ -64,13 +64,22 @@ export const clerkWebhooks = async (req, res) => {
 
 // PayMongo Webhooks to Manage Payments Action
 export const paymongoWebhooks = async (request, response) => {
-  console.log("Paymongo Webhook Triggered")
-  console.log("Request Body:", request.jsonBody)
-  console.log("Request Headers:", request.headers)
-  console.log("Raw Body:", request.rawBody)
-  console.log("Signature:", request.headers['paymongo-signature'])
-  console.log("Request Body:", request.body)
-  console.log("Request Body String:", request.body.toString('utf8'))
-  console.log("Request Raw Body String:", request.rawBody.toString('utf8'))
-  console.log("Payment Type", request.jsonBody.data.attributes.type)
-}
+  const signature = request.headers['paymongo-signature'];
+  const webhookSecret = process.env.PAYMONGO_WEBHOOK_SECRET;
+
+  const rawBody = request.rawBody || JSON.stringify(request.body);
+
+  const computedSignature = crypto
+    .createHmac('sha256', webhookSecret)
+    .update(rawBody)
+    .digest('hex');
+
+  if (signature !== computedSignature) {
+    return response.status(400).send('Invalid webhook signature');
+  }
+
+  const event = JSON.parse(rawBody);
+  console.log('Verified webhook event:', event);
+
+  response.status(200).send('OK');
+};
