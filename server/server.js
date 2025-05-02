@@ -29,23 +29,8 @@ app.use('/api/user', express.json(), userRouter)
 
 app.post('/paymongo', 
   express.raw({ 
-    type: 'application/json'
-  }), 
-  (req, res, next) => {
-    if (req.body) {
-      try {
-        req.rawBody = req.body.toString('utf8');
-        req.jsonBody = JSON.parse(req.rawBody);
-        next();
-      } catch (e) {
-        console.error('Error parsing webhook body:', e);
-        res.status(400).send('Invalid JSON');
-      }
-    } else {
-      console.error('Empty request body');
-      res.status(400).send('Empty request body');
-    }
-  },
+    type: 'application/json' 
+  }),
   paymongoWebhooks
 );
 

@@ -2,7 +2,7 @@ import { Webhook } from "svix";
 import User from "../models/User.js";
 import { Purchase } from "../models/Purchase.js";
 import Course from "../models/Course.js";
-import crypto from 'crypto';
+import paymongo from "paymongo-node";
 
 
 // API Controller Function to Manage Clerk User with database
@@ -65,30 +65,24 @@ export const clerkWebhooks = async (req, res) => {
 // PayMongo Webhooks to Manage Payments Action
 export const paymongoWebhooks = async (request, response) => {
   const signature = request.headers['paymongo-signature'];
-  const webhookSecret = process.env.PAYMONGO_WEBHOOK_SECRET;
-  const rawBody = request.rawBody; // You already set this in your middleware
 
-  if (!signature || !rawBody) {
-    return response.status(400).send('Missing signature or body');
+  let event;
+
+  console.log("Paymongo Webhook Signature: ", signature);
+  console.log("Paymongo Webhook Headers: ", request.headers);
+  console.log("Paymongo Webhook Raw Body: ", request.rawBody);
+
+  try{
+    event = paymongo.Webhooks.constructEvent({
+      payload: request.rawBody,
+      signatureHeader: signature,
+      webhookSecretKey: process.env.PAYMONGO_WEBHOOK_SECRET,
+    });
+  } catch (err) {
+    response.status(400).send(`Webhook Error: ${err.message}`);
   }
+}
 
-  const computedSignature = crypto
-    .createHmac('sha256', webhookSecret)
-    .update(rawBody)
-    .digest('hex');
-
-  if (signature !== computedSignature) {
-    return response.status(400).send('Invalid webhook signature');
-  }
-
-  const event = request.jsonBody; // Already parsed in middleware
-
-  console.log('Verified event:', event);
-
-  // You can now handle `event` as needed
-  response.status(200).send('Webhook received');
-};
-
-// Enable Webhook for PayMongo if not already enabled
-export const enableWebhook = async (req, res) => {
+// Enable PayMongo Webhook if not already enabled
+export const enablePaymongoWebhook = async (request, response) => {
 }
