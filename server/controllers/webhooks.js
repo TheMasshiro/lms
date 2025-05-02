@@ -68,5 +68,5 @@ export const paymongoWebhooks = async (request, res) => {
   console.log(request.body)
   console.log(request.headers)
   console.log(request.rawBody)
-  console.log(request.body.data.attributes.events)
+  console.log(request.body.data[0].attributes.events);
 }
