@@ -63,12 +63,57 @@ export const clerkWebhooks = async (req, res) => {
 }
 
 // PayMongo Webhooks to Manage Payments Action
-export const paymongoWebhooks = async (request, res) => {
-  console.log("Paymongo Webhook Triggered")
-  console.log("Request Body:" + JSON.stringify(request.body, null, 2))
-  console.log("Request Headers:" + JSON.stringify(request.headers, null, 2))
-  console.log("Request Raw Body:" + request.rawBody)
-  console.log("Request Signature:" + request.headers['paymongo-signature'])
-  console.log("Request Timestamp:" + request.headers['paymongo-timestamp'])
-  console.log("Request Data:" + request.body.data)
-}
+export const paymongoWebhooks = async (req, res) => {
+  try {
+    console.log("Paymongo Webhook Triggered");
+
+    // Step 1: Get raw body string
+    const raw = req.rawBody?.toString('utf8');
+
+    // Step 2: Parse it to JSON
+    const body = JSON.parse(raw);
+    console.log("Parsed body:", JSON.stringify(body, null, 2));
+
+    // Step 3: Verify signature
+    const signatureHeader = req.headers['paymongo-signature'];
+    const secret = process.env.PAYMONGO_WEBHOOK_SECRET;
+    if (!signatureHeader || !secret || !raw) {
+      console.error("Missing signature, secret or raw body");
+      return res.status(400).send("Missing headers or body");
+    }
+
+    const [timestampPart, hashPart] = signatureHeader.split(',').map(s => s.split('=')[1]);
+    const signedPayload = `${timestampPart}.${raw}`;
+    const expectedSignature = crypto
+      .createHmac('sha256', secret)
+      .update(signedPayload)
+      .digest('hex');
+
+    if (expectedSignature !== hashPart) {
+      console.error("Signature mismatch");
+      return res.status(400).send("Invalid signature");
+    }
+
+    // Step 4: Handle event
+    const eventType = body.data.attributes.type;
+    const eventData = body.data.attributes.data;
+
+    if (eventType === 'checkout_session.payment.paid') {
+      const purchaseId = eventData.attributes.metadata?.purchaseId;
+      if (!purchaseId) {
+        console.error("Missing purchaseId");
+        return res.status(400).send("No purchaseId");
+      }
+
+      // Update purchase logic here
+      // ...
+
+      return res.status(200).send("Success");
+    }
+
+    res.status(200).send("Unhandled event");
+  } catch (error) {
+    console.error("Webhook error:", error);
+    res.status(500).send("Internal error");
+  }
+};
