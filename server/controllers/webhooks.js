@@ -65,20 +65,27 @@ export const clerkWebhooks = async (req, res) => {
 // PayMongo Webhooks to Manage Payments Action
 export const paymongoWebhooks = async (request, response) => {
   const signature = request.headers['paymongo-signature'];
+  const rawBody = request.body.toString('utf8');
 
   let event;
 
-  console.log("Paymongo Webhook Signature: ", signature);
-  console.log("Paymongo Webhook Headers: ", request.headers);
-  console.log("Paymongo Webhook Raw Body: ", request.rawBody);
-
-  try{
+  try {
     event = paymongo.Webhooks.constructEvent({
-      payload: request.rawBody,
+      payload: rawBody,
       signatureHeader: signature,
       webhookSecretKey: process.env.PAYMONGO_WEBHOOK_SECRET,
     });
+
+    console.log("Received event:", event);
+    console.log("Event type:", event.type);
+    cosnole.log("Event data:", event.data);
+    console.log("Event object:", event.object);
+    console.log("Raw body:", rawBody);
+    console.log("Signature header:", signature);
+    
+    response.status(200).json({ received: true });
   } catch (err) {
+    console.error(`Webhook Error: ${err.message}`);
     response.status(400).send(`Webhook Error: ${err.message}`);
   }
 }
