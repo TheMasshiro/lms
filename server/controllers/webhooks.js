@@ -83,10 +83,10 @@ export const paymongoWebhooks = async (request, response) => {
 
     switch (event.type) {
       case 'payment.paid': {
-        const paymentData = event.data.attributes;
-        const paymentId = event.data.id;
-        console.log('Payment ID:', paymentId);
-        console.log('Payment Data:', paymentData);
+        //const paymentData = event.data.attributes;
+        //const paymentId = event.data.id;
+        //console.log('Payment ID:', paymentId);
+        //console.log('Payment Data:', paymentData);
       }
 
       case 'payment.failed':{
