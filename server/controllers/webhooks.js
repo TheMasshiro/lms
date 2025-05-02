@@ -63,126 +63,37 @@ export const clerkWebhooks = async (req, res) => {
 }
 
 
-const paymongo = paymongoPackage(process.env.PAYMONGO_SECRET_KEY);
+const paymongoInstance = paymongoPackage(process.env.PAYMONGO_SECRET_KEY);
 
+// PayMongo Webhooks Handler function
 export const paymongoWebhooks = async (request, response) => {
   const signature = request.headers['paymongo-signature'];
-  
-  if (!signature) {
-    console.error('Missing PayMongo signature');
-    return response.status(400).send('Missing signature');
-  }
-
   const rawBody = request.body.toString('utf8');
   
+  
   try {
-    const event = paymongo.webhooks.constructEvent({
+    const event = paymongoInstance.webhooks.constructEvent({
       payload: rawBody,
       signatureHeader: signature,
       webhookSecretKey: process.env.PAYMONGO_WEBHOOK_SECRET,
     });
-    
-    console.log("PayMongo Webhook Event:", event.type);
-    console.log("Event Data:", JSON.stringify(event.data, null, 2));
-
 
     switch (event.type) {
       case 'payment.paid': {
-        const paymentData = event.data;
-
-        const metadata = paymentData.attributes?.metadata || {};
-        const purchaseId = metadata.purchaseId;
-        
-        console.log("Payment metadata:", metadata);
-        console.log("Purchase ID from metadata:", purchaseId);
-        
-        if (!purchaseId) {
-          console.error('No purchaseId found in payment metadata');
-          return response.status(200).json({ received: true, status: 'missing-purchase-id' });
-        }
-        
-        try {
-          const purchaseData = await Purchase.findById(purchaseId);
-          if (!purchaseData) {
-            console.error(`Purchase with ID ${purchaseId} not found`);
-            return response.status(200).json({ received: true, status: 'purchase-not-found' });
-          }
-          
-          const userData = await User.findById(purchaseData.userId);
-          if (!userData) {
-            console.error(`User with ID ${purchaseData.userId} not found`);
-            return response.status(200).json({ received: true, status: 'user-not-found' });
-          }
-          
-          const courseData = await Course.findById(purchaseData.courseId.toString());
-          if (!courseData) {
-            console.error(`Course with ID ${purchaseData.courseId} not found`);
-            return response.status(200).json({ received: true, status: 'course-not-found' });
-          }
-
-          if (!courseData.enrolledStudents.includes(userData._id)) {
-            courseData.enrolledStudents.push(userData._id);
-            await courseData.save();
-          }
-
-          if (!userData.enrolledCourses.includes(courseData._id)) {
-            userData.enrolledCourses.push(courseData._id);
-            await userData.save();
-          }
-
-          purchaseData.status = 'completed';
-          purchaseData.paymentId = paymentData.id;
-          await purchaseData.save();
-          
-          console.log(`Successfully processed payment for purchase ${purchaseId}`);
-        } catch (error) {
-          console.error('Error updating database after payment:', error);
-          return response.status(200).json({ received: true, status: 'database-error', error: error.message });
-        }
-        break;
+        const paymentData = event.data.attributes;
+        const paymentId = event.data.id;
+        console.log('Payment ID:', paymentId);
+        console.log('Payment Data:', paymentData);
       }
-      
-      case 'payment.failed': {
-        const paymentData = event.data;
-        
-        const metadata = paymentData.attributes?.metadata || {};
-        const purchaseId = metadata.purchaseId;
-        
-        console.log("Payment metadata:", metadata);
-        console.log("Purchase ID from metadata:", purchaseId);
-        
-        if (!purchaseId) {
-          console.error('No purchaseId found in payment metadata');
-          return response.status(200).json({ received: true, status: 'missing-purchase-id' });
-        }
-        
-        try {
-          const purchaseData = await Purchase.findById(purchaseId);
-          if (!purchaseData) {
-            console.error(`Purchase with ID ${purchaseId} not found`);
-            return response.status(200).json({ received: true, status: 'purchase-not-found' });
-          }
-          
-          purchaseData.status = 'failed';
-          purchaseData.paymentId = paymentData.id;
-          await purchaseData.save();
-          
-          console.log(`Marked purchase ${purchaseId} as failed`);
-        } catch (error) {
-          console.error('Error updating database after payment failure:', error);
-          return response.status(200).json({ received: true, status: 'database-error', error: error.message });
-        }
-        break;
+
+      case 'payment.failed':{
+
       }
-      
-      default:
-        console.log(`Unhandled event type ${event.type}`);
     }
     
-    return response.status(200).json({ received: true, status: 'success' });
+    response.status(200).json({ received: true });
   } catch (err) {
-    console.error(`Webhook Error: ${err.message}`);
-    return response.status(400).send(`Webhook Error: ${err.message}`);
+    response.status(400).send(`Webhook Error: ${err.message}`);
   }
 }
 
