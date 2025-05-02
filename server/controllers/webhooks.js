@@ -66,8 +66,11 @@ export const clerkWebhooks = async (req, res) => {
 export const paymongoWebhooks = async (request, response) => {
   const signature = request.headers['paymongo-signature'];
   const webhookSecret = process.env.PAYMONGO_WEBHOOK_SECRET;
+  const rawBody = request.rawBody; // You already set this in your middleware
 
-  const rawBody = request.rawBody || JSON.stringify(request.body);
+  if (!signature || !rawBody) {
+    return response.status(400).send('Missing signature or body');
+  }
 
   const computedSignature = crypto
     .createHmac('sha256', webhookSecret)
@@ -78,8 +81,14 @@ export const paymongoWebhooks = async (request, response) => {
     return response.status(400).send('Invalid webhook signature');
   }
 
-  const event = JSON.parse(rawBody);
-  console.log('Verified webhook event:', event);
+  const event = request.jsonBody; // Already parsed in middleware
 
-  response.status(200).send('OK');
+  console.log('Verified event:', event);
+
+  // You can now handle `event` as needed
+  response.status(200).send('Webhook received');
 };
+
+// Enable Webhook for PayMongo if not already enabled
+export const enableWebhook = async (req, res) => {
+}
