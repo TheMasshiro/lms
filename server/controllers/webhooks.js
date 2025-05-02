@@ -64,64 +64,23 @@ export const clerkWebhooks = async (req, res) => {
 
 // PayMongo Webhooks to Manage Payments Action
 export const paymongoWebhooks = async (req, res) => {
-  const signatureHeader = req.headers['paymongo-signature'];
-  const secret = process.env.PAYMONGO_WEBHOOK_SECRET;
-  
-  if (!signatureHeader || !secret || !req.rawBody) {
-    return res.status(400).send('Missing headers or raw body');
+ console.log("Paymongo Webhook Triggered")
+  try {
+    const { type, data } = req.body;
+    const secret = process.env.PAYMONGO_WEBHOOK_SECRET;
+    const signature = req.headers['paymongo-signature'];
+  } catch (error) {
+    console.error("Error in Paymongo Webhook:", error.message);
+    res.status(500).json({ success: false, message: error.message });
   }
-  
-  const [timestamp, signature] = signatureHeader.split(',');
-  const signedPayload = `${timestamp}.${req.rawBody}`;
-  
-  const expectedSignature = crypto
-    .createHmac('sha256', secret)
-    .update(signedPayload)
-    .digest('hex');
-  
-  if (expectedSignature !== signature) {
-    console.log('Signature mismatch:', expectedSignature, signature);
-    return res.status(400).send('Invalid signature');
+  const hmac = crypto.createHmac('sha256', secret);
+  hmac.update(JSON.stringify(req.body), 'utf8');
+  const digest = hmac.digest('hex');
+  if (digest !== signature) {
+    return res.status(401).json({ success: false, message: 'Invalid signature' });
   }
-
-  const event = req.body;
-
-  switch (event.type) {
-    case 'payment.paid': {
-      const desc = paymentData.description;
-      const match = desc.match(/purchase:([a-f\d]{24})/);
-      const purchaseId = match ? match[1] : null;
-
-      const purchase = await Purchase.findById(purchaseId);
-      const user = await User.findById(purchase.userId);
-      const course = await Course.findById(purchase.courseId.toString());
-
-      course.enrolledStudents.push(user);
-      await course.save();
-
-      user.enrolledCourses.push(course._id);
-      await user.save();
-
-      purchase.status = 'completed';
-      await purchase.save();
-
-      break;
-    }
-
-    case 'payment.failed': {
-      const paymentData = event.data.attributes;
-      const purchaseId = paymentData.description;
-
-      const purchase = await Purchase.findById(purchaseId);
-      purchase.status = 'failed';
-      await purchase.save();
-
-      break;
-    }
-
-    default:
-      console.log(`Unhandled event type ${event.type}`);
-  }
-
-  res.json({ received: true });
+  console.log("Signature Verified")
+  const { type, data } = req.body;
+  console.log("Type:", type)
+  console.log("Data:", data)
 }
