@@ -65,6 +65,6 @@ export const clerkWebhooks = async (req, res) => {
 // PayMongo Webhooks to Manage Payments Action
 export const paymongoWebhooks = async (request, response) => {
   const signature = request.headers['paymongo-signature'];
-  console.log("Request Body:", request.body)
-  console.log("Signature:", signature)
+  console.log("Request Body:", request.jsonBody)
+  console.log("Signature Header:", signature)
 }
