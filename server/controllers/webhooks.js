@@ -62,58 +62,127 @@ export const clerkWebhooks = async (req, res) => {
   }
 }
 
-// PayMongo Webhooks to Manage Payments Action
-export const paymongoWebhooks = async (req, res) => {
-  try {
-    console.log("Paymongo Webhook Triggered");
-
-    // Step 1: Get raw body string
-    const raw = req.rawBody?.toString('utf8');
-
-    // Step 2: Parse it to JSON
-    const body = JSON.parse(raw);
-    console.log("Parsed body:", JSON.stringify(body, null, 2));
-
-    // Step 3: Verify signature
-    const signatureHeader = req.headers['paymongo-signature'];
-    const secret = process.env.PAYMONGO_WEBHOOK_SECRET;
-    if (!signatureHeader || !secret || !raw) {
-      console.error("Missing signature, secret or raw body");
-      return res.status(400).send("Missing headers or body");
-    }
-
-    const [timestampPart, hashPart] = signatureHeader.split(',').map(s => s.split('=')[1]);
-    const signedPayload = `${timestampPart}.${raw}`;
-    const expectedSignature = crypto
-      .createHmac('sha256', secret)
-      .update(signedPayload)
-      .digest('hex');
-
-    if (expectedSignature !== hashPart) {
-      console.error("Signature mismatch");
-      return res.status(400).send("Invalid signature");
-    }
-
-    // Step 4: Handle event
-    const eventType = body.data.attributes.type;
-    const eventData = body.data.attributes.data;
-
-    if (eventType === 'checkout_session.payment.paid') {
-      const purchaseId = eventData.attributes.metadata?.purchaseId;
-      if (!purchaseId) {
-        console.error("Missing purchaseId");
-        return res.status(400).send("No purchaseId");
-      }
-
-      // Update purchase logic here
-      // ...
-
-      return res.status(200).send("Success");
-    }
-
-    res.status(200).send("Unhandled event");
-  } catch (error) {
-    console.error("Webhook error:", error);
-    res.status(500).send("Internal error");
+function verifyPaymongoSignature(payload, signature, secret) {
+  const signatureParts = signature.split(',');
+  
+  if (signatureParts.length < 2) {
+    return false;
   }
-};
+  
+  const timestamp = signatureParts[0].split('=')[1];
+  const signatureValue = signatureParts[1].split('=')[1];
+  
+  const signedPayload = `${timestamp}.${payload}`;
+  
+  // Generate the expected signature
+  const hmac = crypto.createHmac('sha256', secret);
+  const expectedSignature = hmac.update(signedPayload).digest('hex');
+  
+  try {
+    return crypto.timingSafeEqual(
+      Buffer.from(signatureValue),
+      Buffer.from(expectedSignature)
+    );
+  } catch (error) {
+    console.error('Error comparing signatures:', error);
+    return false;
+  }
+}
+
+// PayMongo Webhooks to Manage Payments Action
+export const paymongoWebhooks = async (request, response) => {
+  const paymongoSignature = request.headers['paymongo-signature'];
+  
+  if (!paymongoSignature) {
+    return response.status(400).send('PayMongo signature is missing');
+  }
+
+  try {
+    const payload = request.body;
+    const rawBody = request.rawBody || JSON.stringify(payload);
+    
+    const isValidSignature = verifyPaymongoSignature(
+      rawBody,
+      paymongoSignature,
+      process.env.PAYMONGO_WEBHOOK_SECRET
+    );
+    
+    if (!isValidSignature) {
+      return response.status(400).send('Invalid PayMongo signature');
+    }
+    
+    const eventType = payload.data.attributes.type;
+    
+    switch (eventType) {
+      case 'payment.paid': {
+        const paymentData = payload.data.attributes;
+        const paymentId = payload.data.id;
+        
+        const metadata = paymentData.metadata || {};
+        const purchaseId = metadata.purchaseId;
+        
+        if (purchaseId) {
+          const purchaseData = await Purchase.findById(purchaseId);
+          const userData = await User.findById(purchaseData.userId);
+          const courseData = await Course.findById(purchaseData.courseId.toString());
+          
+          courseData.enrolledStudents.push(userData);
+          await courseData.save();
+          
+          userData.enrolledCourses.push(courseData._id);
+          await userData.save();
+          
+          purchaseData.status = 'completed';
+          await purchaseData.save();
+        }
+        break;
+      }
+      case 'payment.failed': {
+        const paymentData = payload.data.attributes;
+        const metadata = paymentData.metadata || {};
+        const purchaseId = metadata.purchaseId;
+        
+        if (purchaseId) {
+          const purchaseData = await Purchase.findById(purchaseId);
+          purchaseData.status = 'failed';
+          await purchaseData.save();
+        }
+        break;
+      }
+      case 'checkout_session.payment.paid': {
+        const checkoutSession = payload.data.attributes;
+        const metadata = checkoutSession.metadata || {};
+        const purchaseId = metadata.purchaseId;
+        
+        if (purchaseId) {
+          // Similar logic as payment.paid
+          const purchaseData = await Purchase.findById(purchaseId);
+          const userData = await User.findById(purchaseData.userId);
+          const courseData = await Course.findById(purchaseData.courseId.toString());
+          
+          courseData.enrolledStudents.push(userData);
+          await courseData.save();
+          
+          userData.enrolledCourses.push(courseData._id);
+          await userData.save();
+          
+          purchaseData.status = 'completed';
+          await purchaseData.save();
+        }
+        break;
+      }
+      case 'source.chargeable': {
+        console.log('Source is chargeable:', payload.data);
+        break;
+      }
+      default:
+        console.log(`Unhandled event type: ${eventType}`);
+    }
+    
+    // Return a success response
+    return response.status(200).json({ received: true });
+  } catch (error) {
+    console.error('PayMongo Webhook Error:', error);
+    return response.status(400).send(`Webhook Error: ${error.message}`);
+  }
+}

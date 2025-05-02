@@ -23,30 +23,7 @@ app.use(clerkMiddleware())
 // Routes
 app.get('/', (req, res) => res.send("API Working"))
 app.post('/clerk', express.json() , clerkWebhooks)
-
-// Use raw body ONLY for the PayMongo webhook
-app.use('/paymongo', (req, res, next) => {
-  if (req.headers['content-type'] === 'application/json') {
-    getRawBody(req, {
-      length: req.headers['content-length'],
-      limit: '1mb',
-      encoding: 'utf8',
-    }, (err, string) => {
-      if (err) return next(err);
-      req.rawBody = string;
-      try {
-        req.body = JSON.parse(string); // optional, useful if you want both
-      } catch (e) {
-        return res.status(400).send('Invalid JSON');
-      }
-      next();
-    });
-  } else {
-    next();
-  }
-});
 app.post('/paymongo', express.raw({ type: 'application/json' }), paymongoWebhooks);
-
 app.use('/api/educator', express.json(), educatorRouter)
 app.use('/api/course', express.json(), courseRouter)
 app.use('/api/user', express.json(), userRouter)
