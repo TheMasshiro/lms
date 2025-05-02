@@ -23,7 +23,35 @@ app.use(clerkMiddleware())
 // Routes
 app.get('/', (req, res) => res.send("API Working"))
 app.post('/clerk', express.json() , clerkWebhooks)
-app.post('/paymongo', express.raw({ type: 'application/json' }), paymongoWebhooks);
+
+app.post('/paymongo', 
+  express.raw({ 
+    type: 'application/json'
+  }), 
+  // Save raw body to request object for signature verification
+  (req, res, next) => {
+    if (req.body) {
+      try {
+        // Save the raw body string
+        req.rawBody = req.body.toString('utf8');
+        
+        // Also parse JSON for easier access
+        req.jsonBody = JSON.parse(req.rawBody);
+        
+        // Continue to webhook handler
+        next();
+      } catch (e) {
+        console.error('Error parsing webhook body:', e);
+        res.status(400).send('Invalid JSON');
+      }
+    } else {
+      console.error('Empty request body');
+      res.status(400).send('Empty request body');
+    }
+  },
+  paymongoWebhooks
+);
+
 app.use('/api/educator', express.json(), educatorRouter)
 app.use('/api/course', express.json(), courseRouter)
 app.use('/api/user', express.json(), userRouter)
