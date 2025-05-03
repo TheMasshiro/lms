@@ -56,7 +56,7 @@ const enrollment = () => {
     }
   }, [enrolledCourses]);
 
-  return !isEducator && enrolledCourses ? (
+  return isEducator && enrolledCourses ? (
     <div className="h-screen flex flex-col items-start justify-between md:p-8 md:pb-0 p-4 pt-8 pb-0">
       <div className="w-full">
         <h2 className="pb-4 text-lg font-medium">My Enrollments</h2>

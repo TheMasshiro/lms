@@ -1,0 +1,146 @@
+.game-container {
+  text-align: center;
+  padding: 40px 20px;
+  font-family: Georgia, "Times New Roman", Times, serif; /* Similar font to the site */
+  color: #333;
+}
+
+.game-container h2 {
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+  color: #333; /* Darker heading color */
+}
+
+.game-container p {
+  font-size: 1.2rem;
+  margin-bottom: 20px;
+  color: #666; /* Slightly lighter text color */
+}
+
+.game-container .board {
+  display: grid;
+  grid-template-columns: repeat(3, 100px); /* Keeps the board square */
+  gap: 10px;
+  justify-content: center;
+  margin: 0 auto 20px auto;
+}
+
+.game-container .cell {
+  width: 100px;
+  height: 100px;
+  font-size: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #fff; /* White background for clean look */
+  border: 3px solid #ddd; /* Light border */
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  border-radius: 10px; /* Rounded corners */
+}
+
+.game-container .cell:hover {
+  background-color: #f0f0f0; /* Subtle hover effect */
+}
+
+.game-container .button-group {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 500px) {
+  .game-container .button-group {
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .game-container .board {
+    grid-template-columns: repeat(
+      3,
+      80px
+    ); /* Adjusts board size on small screens */
+    gap: 8px;
+  }
+
+  .game-container .cell {
+    width: 80px;
+    height: 80px;
+    font-size: 2rem;
+  }
+
+  .game-container button {
+    width: 80%;
+    max-width: 250px;
+  }
+}
+
+.game-container button {
+  padding: 12px 24px;
+  font-size: 1.2rem;
+  background-color: #00e1ff07;
+  color: rgb(0, 0, 0);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.game-container button:hover {
+  background-color: #00e1ff;
+}
+
+.popup {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 25px;
+  border-radius: 10px;
+  text-align: center;
+  z-index: 10;
+  opacity: 0;
+  animation: popupFadeIn 0.5s forwards, popupScaleIn 0.4s ease-out forwards;
+}
+
+@keyframes popupFadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes popupScaleIn {
+  0% {
+    transform: translate(-50%, -50%) scale(0.8);
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+.popup h3 {
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+}
+
+.popup button {
+  background-color: #00e1ff;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background-color 0.2s ease;
+}
+
+.popup button:hover {
+  background-color: #0056b3;
+}

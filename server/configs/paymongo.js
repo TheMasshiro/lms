@@ -9,38 +9,43 @@ const PAYMONGO_WEBHOOK_URL = process.env.PAYMONGO_WEBHOOK_URL;
 // -jc
 
 const paymongoWH = async () => {
-    try {
-        const response = await axios.post(
-            "https://api.paymongo.com/v1/webhooks",
-            {
-                data: {
-                    attributes: {
-                        url: PAYMONGO_WEBHOOK_URL,
-                        events: [
-                            "source.chargeable",
-                            "payment.failed",
-                            "payment.paid",
-                            "checkout_session.payment.paid"
-                        ],
-                    },
-                }
-            },
-            {
-                headers: {
-                    Authorization: `Basic ${Buffer.from(PAYMONGO_SECRET_KEY + ':').toString('base64')}`,
-                    'Content-Type': 'application/json'
-                }
-            }
-        );
+  try {
+    const response = await axios.post(
+      "https://api.paymongo.com/v1/webhooks",
+      {
+        data: {
+          attributes: {
+            url: PAYMONGO_WEBHOOK_URL,
+            events: [
+              "source.chargeable",
+              "payment.failed",
+              "payment.paid",
+              "checkout_session.payment.paid",
+            ],
+          },
+        },
+      },
+      {
+        headers: {
+          Authorization: `Basic ${Buffer.from(
+            PAYMONGO_SECRET_KEY + ":"
+          ).toString("base64")}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
-        const { live_mode, secret_key, status } = response.data.data.attributes;
+    const { live_mode, secret_key, status } = response.data.data.attributes;
 
-        console.log("Secret Key:", secret_key);
-        console.log("Live Mode:", live_mode);
-        console.log("Status:", status);
-    } catch (error) {
-        console.error("Error creating webhook:", error.response?.data || error.message);
-    }
+    console.log("Secret Key:", secret_key);
+    console.log("Live Mode:", live_mode);
+    console.log("Status:", status);
+  } catch (error) {
+    console.error(
+      "Error creating webhook:",
+      error.response?.data || error.message
+    );
+  }
 };
 
 paymongoWH();
