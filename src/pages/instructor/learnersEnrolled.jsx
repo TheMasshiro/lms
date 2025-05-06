@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useContext } from "react";
-import { dummyStudentEnrolled } from "../../assets/assets";
 import Loading from "../../components/learner/Loading";
 import { AppContext } from "../../context/AppContext";
 import { toast } from "react-toastify";
@@ -7,8 +6,7 @@ import axios from "axios";
 
 const learnersEnrolled = () => {
   const { backendUrl, getToken, isEducator } = useContext(AppContext);
-  const [enrolledStudents, setEnrolledStudents] =
-    useState(dummyStudentEnrolled);
+  const [enrolledStudents, setEnrolledStudents] = useState([]);
 
   const fetchEnrolledStudents = async () => {
     try {
@@ -33,6 +31,10 @@ const learnersEnrolled = () => {
       fetchEnrolledStudents();
     }
   }, [isEducator]);
+
+  console.log("Enrolled Students:", enrolledStudents);
+  const enrolledStudentsCount = enrolledStudents.length;
+  console.log("Enrolled Students Count:", enrolledStudentsCount);
 
   return isEducator && enrolledStudents ? (
     <div className="min-h-screen flex flex-col items-start justify-between md:p-8 md:pb-0 p-4 pt-8 pb-0">
