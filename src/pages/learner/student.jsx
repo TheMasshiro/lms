@@ -1,11 +1,15 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Outlet } from "react-router-dom";
 import Navbar from "../../components/learner/dashboard_navbar";
 import Sidebar from "../../components/learner/sidebar";
 import Footer from "../../components/instructor/footer";
+import Loading from "../../components/learner/Loading";
+import { AppContext } from "../../context/AppContext";
 
 const student = () => {
-  return (
+  const { isEducator } = useContext(AppContext);
+
+  return !isEducator ? (
     <div className="text-default min-h-screen bg-white">
       <Navbar />
       <div className="flex">
@@ -14,6 +18,8 @@ const student = () => {
       </div>
       <Footer />
     </div>
+  ) : (
+    <Loading />
   );
 };
 
