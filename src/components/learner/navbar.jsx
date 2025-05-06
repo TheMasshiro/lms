@@ -35,17 +35,15 @@ const Navbar = () => {
   };
 
   useEffect(() => {
-    if (user) {
       const timer = setTimeout(() => {
         setDelayLoad(true);
       }, 500);
       return () => clearTimeout(timer);
-    }
-  }, [user]);
+  }, []);
 
   const dashboardLabel = isEducator ? "Educator Dashboard" : "Student Dashboard";
 
-  return user && delayLoad ? (
+  return delayLoad ? (
     <div
       className={`flex items-center justify-between px-4 sm:px-10 md:px-14 lg:px-20 border-b border-gray-500 py-4 ${
         isCourseListPage ? "bg-white" : "bg-cyan-100/70"
