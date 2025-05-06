@@ -3,7 +3,7 @@ import { Route, Routes, useMatch } from "react-router-dom";
 import Home from "./pages/learner/home";
 import CourseList from "./pages/learner/coursesList";
 import CourseDetails from "./pages/learner/courseDetails";
-import Enrollment from "./pages/learner/enrollment";
+import Editor from "./pages/learner/editor/Editor";
 import VPlayer from "./pages/learner/vPlayer";
 import About from "./pages/learner/about";
 import Quiz from "./pages/learner/quiz";
@@ -26,10 +26,12 @@ import Snake from "./pages/learner/snake";
 import Cell from "./pages/learner/Cell";
 import Student from "./pages/learner/student";
 import Student_Enrollment from "./pages/learner/enrollment";
+import RouteWatcher from "./components/learner/RouteWatcher";
+
 
 const App = () => {
   const isEducatorRoute = useMatch("/educator/*");
-  const isStudentRoute = useMatch("/student/enrollment/*");
+  const isStudentRoute = useMatch("/student/*");
 
   const hideNavbar = isEducatorRoute || isStudentRoute;
 
@@ -37,10 +39,13 @@ const App = () => {
     <div className="text-default min-h-screen bg-white">
       <ToastContainer />
       {!hideNavbar && <Navbar />}
+      <RouteWatcher />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />
         <Route path="/learnmore" element={<Learnmore />} />
+
+        <Route path="/editor" element={<Editor />} />
 
         <Route path="/quiz" element={<Quiz />} />
         <Route path="/getstarted" element={<GetStarted />} />
@@ -56,8 +61,8 @@ const App = () => {
         <Route path="/vPlayer/:courseId" element={<VPlayer />} />
         <Route path="/loading/:path" element={<Loading />} />
 
-        <Route path="/student/enrollment" element={<Student />}>
-          <Route path="/student/enrollment" element={<Student_Enrollment />} />
+        <Route path="/student" element={<Student />}>
+          <Route path="/student" element={<Student_Enrollment />} />
         </Route>
 
         <Route path="/educator" element={<Educator />}>
