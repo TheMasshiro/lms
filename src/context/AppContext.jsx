@@ -1,5 +1,4 @@
 import { createContext, useEffect, useState } from "react";
-import { dummyCourses } from "../assets/assets";
 import { useNavigate } from "react-router-dom";
 import humanizeDuration from "humanize-duration";
 import { useAuth, useUser } from "@clerk/clerk-react";
@@ -78,6 +77,7 @@ export const AppContextProvider = ({ children }) => {
     if (user.publicMetadata.role === "educator") {
       setIsEducator(true);
     }
+
     try {
       const token = await getToken();
       const { data } = await axios.get(backendUrl + "/api/user/data", {
@@ -118,8 +118,11 @@ export const AppContextProvider = ({ children }) => {
 
   useEffect(() => {
     if (user) {
-      fetchUserData();
-      fetchUserEnrolledCourses();
+      const timer = setTimeout(() => {
+        fetchUserData();
+        fetchUserEnrolledCourses();
+      }, 500);
+      return () => clearTimeout(timer);
     }
   }, [user]);
 
