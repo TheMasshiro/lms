@@ -79,7 +79,7 @@ export const educatorDashboardData = async (req, res) => {
     // Calculate total earnings from purchases
     const purchases = await Purchase.find({
       courseId: { $in: courseIds },
-      status: "completed",
+      status: "paid",
     });
 
     const totalEarnings = purchases.reduce(
@@ -132,7 +132,7 @@ export const getEnrolledStudentsData = async (req, res) => {
     // Fetch purchases with user and course data
     const purchases = await Purchase.find({
       courseId: { $in: courseIds },
-      status: "completed",
+      status: "paid",
     })
       .populate("userId", "name imageUrl")
       .populate("courseId", "courseTitle");
