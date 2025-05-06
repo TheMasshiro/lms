@@ -10,10 +10,15 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@chakra-ui/react": "^2.8.2",
     "@clerk/clerk-react": "^5.24.1",
+    "@emotion/react": "^11.11.3",
+    "@emotion/styled": "^11.11.0",
     "@fortawesome/free-solid-svg-icons": "^6.7.2",
     "@fortawesome/react-fontawesome": "^0.2.2",
+    "@monaco-editor/react": "^4.6.0",
     "axios": "^1.8.4",
+    "framer-motion": "^11.0.3",
     "humanize-duration": "^3.32.1",
     "quill": "^2.0.3",
     "rc-progress": "^4.0.0",
