@@ -9,7 +9,6 @@ import { clerkClient } from "@clerk/express";
 export const getUserData = async (req, res) => {
   try {
     const userId = req.auth.userId;
-
     const user = await User.findById(userId);
 
     if (!user) {
@@ -29,11 +28,11 @@ const get_success_url = async (req, res) => {
     const userId = req.auth.userId;
     const response = await clerkClient.users.getUser(userId);
     if (response.publicMetadata.role !== "educator") {
-      return "student/enrollment";
+      return "student";
     } else {
       return "educator/enrollment";
     }
-  } catch (err) {
+  } catch (error) {
     res.json({ success: false, message: error.message });
   }
 };
