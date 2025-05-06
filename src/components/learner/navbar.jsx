@@ -1,14 +1,16 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { assets } from "../../assets/assets";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { useClerk, UserButton, useUser } from "@clerk/clerk-react";
 import { AppContext } from "../../context/AppContext";
+import Loading from "./Loading";
 
 const Navbar = () => {
   const { navigate, isEducator } = useContext(AppContext);
   const { openSignIn } = useClerk();
   const { user } = useUser();
   const location = useLocation();
+  const [delayLoad, setDelayLoad] = useState(null);
 
   const isCourseListPage = location.pathname.includes("/course-list");
 
@@ -28,11 +30,22 @@ const Navbar = () => {
     if (isEducator) {
       navigate("/educator");
     } else {
-      navigate("/student/enrollment");
+      navigate("/student");
     }
   };
 
-  return (
+  useEffect(() => {
+    if (user) {
+      const timer = setTimeout(() => {
+        setDelayLoad(true);
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [user]);
+
+  const dashboardLabel = isEducator ? "Educator Dashboard" : "Student Dashboard";
+
+  return user && delayLoad ? (
     <div
       className={`flex items-center justify-between px-4 sm:px-10 md:px-14 lg:px-20 border-b border-gray-500 py-4 ${
         isCourseListPage ? "bg-white" : "bg-cyan-100/70"
@@ -76,7 +89,7 @@ const Navbar = () => {
                 className="text-gray-500 hover:text-black"
                 onClick={handleClick}
               >
-                {isEducator ? "Educator Dashboard" : "Student Dashboard"}
+                {dashboardLabel}
               </button>
             </>
           )}
@@ -99,7 +112,7 @@ const Navbar = () => {
           {user && (
             <>
               <button onClick={handleClick}>
-                {isEducator ? "Educator Dashboard" : "Student Dashboard"}
+                {dashboardLabel}
               </button>{" "}
               |
             </>
@@ -114,6 +127,8 @@ const Navbar = () => {
         )}
       </div>
     </div>
+  ) : (
+    <Loading />
   );
 };
 

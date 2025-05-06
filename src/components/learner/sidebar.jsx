@@ -9,7 +9,12 @@ const sidebar = () => {
   const menuItems = [
     {
       name: "My Enrollments",
-      path: "/student/enrollment",
+      path: "/student",
+      icon: assets.lesson_icon,
+    },
+    {
+      name: "Personal Details",
+      path: "/student/details",
       icon: assets.lesson_icon,
     },
   ];
@@ -21,7 +26,7 @@ const sidebar = () => {
           <NavLink
             to={item.path}
             key={item.name}
-            end={item.path === "/student/enrollment"}
+            end={item.path === "/student"}
             className={({ isActive }) =>
               `flex items-center md:flex-row flex-col md:justify-start justify-center py-3.5 md:px-10 gap-3 ${
                 isActive
