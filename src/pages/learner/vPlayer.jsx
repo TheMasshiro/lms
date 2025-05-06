@@ -18,6 +18,7 @@ const vPlayer = () => {
     backendUrl,
     getToken,
     userData,
+    navigate,
   } = useContext(AppContext);
 
   const { courseId } = useParams();
@@ -207,6 +208,9 @@ const vPlayer = () => {
           <div className=" flex items-center gap-2 py-3 mt-10">
             <h1 className="text-xl font-bold">Rate this Course:</h1>
             <Rating initialRating={initialRating} onRate={handleRate} />
+          </div>
+          <div className=" flex items-center gap-2 py-10 mt-10">
+          <button onClick={() => navigate("/editor")} className="px-4 py-2 bg-blue-600 text-white text-sm rounded">Open Editor</button>
           </div>
         </div>
 
