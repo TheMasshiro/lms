@@ -79,20 +79,16 @@ export const paymongoWebhooks = async (request, response) => {
         const purchaseId = metadata.purchaseId;
 
         const purchaseData = await Purchase.findById(purchaseId);
+        if (!purchaseData) break;
+
         const userData = await User.findById(purchaseData.userId);
-        const courseData = await Course.findById(
-          purchaseData.courseId.toString()
-        );
+        if (!userData) break;
 
-        courseData.enrolledStudents.push(userData);
-        await courseData.save();
-
-        userData.enrolledCourses.push(courseData._id);
+        userData.hasAccess = true;
         await userData.save();
 
         purchaseData.status = "paid";
         await purchaseData.save();
-
         break;
       }
       case "payment.failed": {
@@ -100,10 +96,13 @@ export const paymongoWebhooks = async (request, response) => {
         const purchaseId = metadata.purchaseId;
 
         const purchaseData = await Purchase.findById(purchaseId);
-        purchaseData.status = "failed";
-        await purchaseData.save();
+        if (purchaseData) {
+          purchaseData.status = "failed";
+          await purchaseData.save();
+        }
         break;
       }
+
       default:
         console.log(`Unhandled event type ${event.type}`);
     }
