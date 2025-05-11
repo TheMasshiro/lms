@@ -77,6 +77,8 @@ console.log("Received Webhook Body:", rawBody);
       webhookSecretKey: process.env.PAYMONGO_WEBHOOK_SECRET,
     });
 
+    console.log("Webhook Event:", event);
+
     switch (event.type) {
       case "payment.paid": {
         const metadata = event.resource.attributes.metadata;
