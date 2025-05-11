@@ -88,6 +88,12 @@ export const paymongoWebhooks = async (request, response) => {
         purchaseData.status = "paid";
         await purchaseData.save();
 
+        console.log("Payment successful:", event);
+        console.log("User has access:", userData.hasAccess);
+        console.log("Purchase status updated:", purchaseData.status);
+        console.log("User data updated:", userData);
+        console.log("Purchase data updated:", purchaseData);
+
         break;
       }
       case "payment.failed": {
@@ -102,8 +108,6 @@ export const paymongoWebhooks = async (request, response) => {
       default:
         console.log(`Unhandled event type ${event.type}`);
     }
-
-    console.log("🚀 Webhook triggered", request.headers, request.body);
 
     response.status(200).json({ received: true });
   } catch (err) {
