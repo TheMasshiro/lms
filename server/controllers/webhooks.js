@@ -66,9 +66,6 @@ export const paymongoWebhooks = async (request, response) => {
   const signature = request.headers["paymongo-signature"];
   const rawBody = request.body.toString("utf8");
 
-  console.log("Received Webhook Signature:", signature);
-  console.log("Received Webhook Body:", rawBody);
-
   try {
     const event = paymongoInstance.webhooks.constructEvent({
       payload: rawBody,
@@ -76,44 +73,19 @@ export const paymongoWebhooks = async (request, response) => {
       webhookSecretKey: process.env.PAYMONGO_WEBHOOK_SECRET,
     });
 
-    console.log("Webhook Event:", event.type);
-
     switch (event.type) {
       case "payment.paid": {
         const metadata = event.resource.attributes.metadata;
         const purchaseId = metadata.purchaseId;
 
-        console.log("Webhook Event: payment.paid");
-        console.log("Received Purchase ID:", purchaseId);
-
         const purchaseData = await Purchase.findById(purchaseId);
-        if (!purchaseData) {
-          console.error("Purchase not found for purchaseId:", purchaseId);
-          return response.status(404).json({ error: "Purchase not found" });
-        }
-
         const userData = await User.findById(purchaseData.userId);
-        if (!userData) {
-          console.error("User not found for userId:", purchaseData.userId);
-          return response.status(404).json({ error: "User not found" });
-        }
 
-        console.log("Payment successful:", event);
-        console.log("User has access:", userData.hasAccess);
-        console.log("Purchase status before update:", purchaseData.status);
-
-        // Only update if the status is not already 'paid'
-        if (purchaseData.status !== "paid") {
-          purchaseData.status = "paid";
-          await purchaseData.save();
-          console.log("Purchase status updated to 'paid'.");
-        } else {
-          console.log("Purchase status was already 'paid'.");
-        }
+        purchaseData.status = "paid";
+        await purchaseData.save();
 
         userData.hasAccess = true;
         await userData.save();
-        console.log("User access granted.");
 
         break;
       }
@@ -129,8 +101,6 @@ export const paymongoWebhooks = async (request, response) => {
       default:
         console.log(`Unhandled event type ${event.type}`);
     }
-
-    console.log("Webhook received:", event);
 
     response.status(200).json({ received: true });
   } catch (err) {
