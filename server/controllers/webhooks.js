@@ -27,7 +27,7 @@ export const clerkWebhooks = async (req, res) => {
           email: data.email_addresses[0].email_address,
           name: data.first_name + " " + data.last_name,
           imageUrl: data.image_url,
-          hasAccess: false,
+          isMember: false,
           resume: "",
         };
         await User.create(userData);
@@ -84,7 +84,7 @@ export const paymongoWebhooks = async (request, response) => {
         purchaseData.status = "paid";
         await purchaseData.save();
 
-        userData.hasAccess = true;
+        userData.isMember = true;
         await userData.save();
 
         break;
