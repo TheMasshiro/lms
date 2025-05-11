@@ -28,6 +28,7 @@ export const clerkWebhooks = async (req, res) => {
           email: data.email_addresses[0].email_address,
           name: data.first_name + " " + data.last_name,
           imageUrl: data.image_url,
+          hasAccess: false,
           resume: "",
         };
         await User.create(userData);
@@ -101,6 +102,8 @@ export const paymongoWebhooks = async (request, response) => {
       default:
         console.log(`Unhandled event type ${event.type}`);
     }
+
+    console.log("🚀 Webhook triggered", request.headers, request.body);
 
     response.status(200).json({ received: true });
   } catch (err) {
