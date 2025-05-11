@@ -67,6 +67,9 @@ export const paymongoWebhooks = async (request, response) => {
   const signature = request.headers["paymongo-signature"];
   const rawBody = request.body.toString("utf8");
 
+  console.log("Received Webhook Signature:", signature);
+console.log("Received Webhook Body:", rawBody);
+
   try {
     const event = paymongoInstance.webhooks.constructEvent({
       payload: rawBody,
