@@ -86,6 +86,12 @@ console.log("Received Webhook Body:", rawBody);
 
         const purchaseData = await Purchase.findById(purchaseId);
         const userData = await User.findById(purchaseData.userId);
+        
+        console.log("Payment successful:", event);
+        console.log("User has access:", userData.hasAccess);
+        console.log("Purchase status updated:", purchaseData.status);
+        console.log("User data updated:", userData);
+        console.log("Purchase data updated:", purchaseData);
 
         userData.hasAccess = true;
         await userData.save();
@@ -93,11 +99,7 @@ console.log("Received Webhook Body:", rawBody);
         purchaseData.status = "paid";
         await purchaseData.save();
 
-        console.log("Payment successful:", event);
-        console.log("User has access:", userData.hasAccess);
-        console.log("Purchase status updated:", purchaseData.status);
-        console.log("User data updated:", userData);
-        console.log("Purchase data updated:", purchaseData);
+
 
         break;
       }
