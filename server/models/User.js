@@ -7,12 +7,15 @@ const userSchema = new mongoose.Schema(
     email: { type: String, required: true },
     imageUrl: { type: String, required: true },
     isMember: { type: Boolean, default: false, required: true },
+    coursesCount: { type: Number, default: 0, required: true },
+    EnrollmentCount: { type: Number, default: 0, required: true },
     enrolledCourses: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Course",
       },
     ],
+    trialUsed: { type: Boolean, default: false },
   },
   { timestamps: true }
 );
