@@ -15,7 +15,6 @@ const userSchema = new mongoose.Schema(
         ref: "Course",
       },
     ],
-    trialUsed: { type: Boolean, default: false },
   },
   { timestamps: true }
 );
