@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import { useContext } from "react";
 import { Link } from "react-router-dom";
 import { AppContext } from "../../context/AppContext";
 import CourseCard from "./courseCard";
@@ -18,8 +18,8 @@ const CourseSection = () => {
       </p>
 
       <div className="grid grid-cols-auto px-4 md:px-0 md:my-16 my-10 gap-4">
-        {allCourses?.slice(0, 4).map((course) => (
-          <CourseCard key={course.id} course={course} />
+        {allCourses?.slice(0, 4).map((course, index) => (
+          <CourseCard key={course?.id ?? index} course={course} />
         ))}
       </div>
 
