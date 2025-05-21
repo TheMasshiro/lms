@@ -6,6 +6,7 @@ import {
   batchEnrollmentCount,
   batchEnrollToCourse,
   enrollToCourse,
+  getCourseProgress,
   getUserCourseProgress,
   getUserData,
   purchaseStatus,
@@ -25,6 +26,7 @@ userRouter.get("/enrolled-courses", userEnrolledCourses);
 
 userRouter.post("/update-course-progress", updateUserCourseProgress);
 userRouter.post("/get-course-progress", getUserCourseProgress);
+userRouter.post("/get-user-course-progress", getCourseProgress);
 
 userRouter.post("/add-rating", addUserRating);
 userRouter.post("/enroll-course", enrollToCourse);
