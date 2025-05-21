@@ -33,7 +33,7 @@ import CourseDetails from "./pages/learner/CourseDetails";
 import CoursesList from "./pages/learner/CoursesList";
 import Editor from "./pages/learner/editor/Editor";
 import Enrollment from "./pages/learner/Enrollment";
-import GetStarted from "./pages/learner/getstarted";
+import GetStarted from "./pages/learner/GetStarted"
 import Home from "./pages/learner/home";
 import StudentHome from "./pages/learner/home/student";
 import PersonalInfo from "./pages/learner/PersonalInfo";
@@ -50,84 +50,84 @@ import Tictactoe from "./pages/learner/games/tictactoe";
 
 
 const App = () => {
-  const { user, isLoaded } = useUser();
-  const [loading, setLoading] = useState(true);
+    const { user, isLoaded } = useUser();
+    const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    if (isLoaded) {
-      const timer = setTimeout(() => {
-        setLoading(false);
-      }, 500);
+    useEffect(() => {
+        if (isLoaded) {
+            const timer = setTimeout(() => {
+                setLoading(false);
+            }, 500);
 
-      return () => clearTimeout(timer);
+            return () => clearTimeout(timer);
+        }
+    }, [isLoaded]);
+
+    if (loading || !isLoaded) {
+        return <Loading />;
     }
-  }, [isLoaded]);
 
-  if (loading || !isLoaded) {
-    return <Loading />;
-  }
+    return (
+        <div className="text-default min-h-screen bg-white">
+            <ToastContainer />
+            <Navbar />
+            <RouteWatcher />
 
-  return (
-    <div className="text-default min-h-screen bg-white">
-      <ToastContainer />
-      <Navbar />
-      <RouteWatcher />
+            <Routes>
+                <Route path="/role/choice" element={<RoleChoice />} />
+                <Route
+                    path="*"
+                    element={
+                        <RequireRole>
+                            <Routes>
+                                <Route path="/" element={<Home />} />
+                                <Route path="/about" element={<About />} />
+                                <Route path="/learnmore" element={<LearnMore />} />
+                                <Route path="/contacts" element={<Contact />} />
+                                <Route path="/editor" element={<Editor />} />
+                                <Route path="/quiz" element={<Quiz />} />
+                                <Route path="/getstarted" element={<GetStarted />} />
+                                <Route path="/game-info" element={<GameInfoCard />} />
+                                <Route path="/tictactoe" element={<Tictactoe />} />
+                                <Route path="/snake" element={<Snake />} />
+                                <Route path="/cell" element={<Cell />} />
+                                <Route path="/privacy" element={<Privacy />} />
+                                <Route path="/loading/:path" element={<Loading />} />
 
-      <Routes>
-        <Route path="/role/choice" element={<RoleChoice />} />
-        <Route
-          path="*"
-          element={
-            <RequireRole>
-              <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/about" element={<About />} />
-                <Route path="/learnmore" element={<LearnMore />} />
-                <Route path="/contacts" element={<Contact />} />
-                <Route path="/editor" element={<Editor />} />
-                <Route path="/quiz" element={<Quiz />} />
-                <Route path="/getstarted" element={<GetStarted />} />
-                <Route path="/game-info" element={<GameInfoCard />} />
-                <Route path="/tictactoe" element={<Tictactoe />} />
-                <Route path="/snake" element={<Snake />} />
-                <Route path="/cell" element={<Cell />} />
-                <Route path="/privacy" element={<Privacy />} />
-                <Route path="/loading/:path" element={<Loading />} />
+                                {/* Student Routes */}
+                                <Route path="/student" element={<StudentHome />}>
+                                    <Route path="/student" element={<Enrollment />} />
+                                    <Route path=":courseId" element={<VPlayer />} />
+                                    <Route path="progress" element={<Progress />} />
+                                    <Route path="courses" element={<CoursesList />} />
+                                    <Route path="courses/:input" element={<CoursesList />} />
+                                    <Route path="courses/view/:id" element={<CourseDetails />} />
+                                </Route>
 
-                {/* Student Routes */}
-                <Route path="/student" element={<StudentHome />}>
-                  <Route path="/student" element={<Enrollment />} />
-                  <Route path=":courseId" element={<VPlayer />} />
-                  <Route path="progress" element={<Progress />} />
-                  <Route path="courses" element={<CoursesList />} />
-                  <Route path="courses/:input" element={<CoursesList />} />
-                  <Route path="courses/view/:id" element={<CourseDetails />} />
-                </Route>
+                                <Route path="/settings/student" element={<StudentSettings />}>
+                                    <Route path="/settings/student" element={<PersonalInfo />} />
+                                </Route>
 
-                <Route path="/settings/student" element={<StudentSettings />}>
-                  <Route path="/settings/student" element={<PersonalInfo />} />
-                </Route>
+                                {/* Educator Routes */}
+                                <Route path="/educator" element={<EducatorHome />}>
+                                    <Route path="/educator" element={<EducatorDashboard />} />
+                                    <Route path="courses" element={<EducatorCourses />} />
+                                    <Route path="courses/:courseId" element={<Preview />} />
+                                    <Route path="students" element={<StudentManagement />} />
+                                    <Route path="progress" element={<StudentProgress />} />
+                                    <Route path="add-course" element={<AddCourse />} />
+                                </Route>
 
-                {/* Educator Routes */}
-                <Route path="/educator" element={<EducatorHome />}>
-                  <Route path="/educator" element={<EducatorDashboard />} />
-                  <Route path="courses" element={<EducatorCourses />} />
-                  <Route path="courses/:courseId" element={<Preview />} />
-                  <Route path="students" element={<StudentManagement />} />
-                  <Route path="progress" element={<StudentProgress />} />
-                  <Route path="add-course" element={<AddCourse />} />
-                </Route>
-
-                <Route path="/settings/educator" element={<EducatorSettings />}>
-                  <Route path="/settings/educator" element={<PersonalInfo />} />
-                </Route>
-              </Routes>
-            </RequireRole>
-          }
-        />
-      </Routes>
-    </div>
-  );
+                                <Route path="/settings/educator" element={<EducatorSettings />}>
+                                    <Route path="/settings/educator" element={<PersonalInfo />} />
+                                </Route>
+                            </Routes>
+                        </RequireRole>
+                    }
+                />
+            </Routes>
+        </div>
+    );
 };
 
 export default App;
