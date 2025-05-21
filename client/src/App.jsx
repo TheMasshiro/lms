@@ -29,8 +29,8 @@ import StudentManagement from "./pages/instructor/Students";
 import Preview from "./pages/instructor/course/Preview";
 
 // Learner Pages
-import CourseDetails from "./pages/learner/courseDetails";
-import CoursesList from "./pages/learner/coursesList";
+import CourseDetails from "./pages/learner/CourseDetails";
+import CoursesList from "./pages/learner/CoursesList";
 import Editor from "./pages/learner/editor/Editor";
 import Enrollment from "./pages/learner/Enrollment";
 import GetStarted from "./pages/learner/getstarted";
