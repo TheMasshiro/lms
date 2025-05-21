@@ -1,28 +1,65 @@
 import React, { useContext, useEffect, useState } from "react";
 import { AppContext } from "../../context/AppContext";
 import Loading from "../../components/learner/Loading";
-import { assets } from "../../assets/assets";
-import { toast } from "react-toastify";
 import axios from "axios";
+import { toast } from "react-toastify";
+import { Link } from "react-router-dom";
+import { useUser } from "@clerk/clerk-react";
+import { 
+  FaUsers, 
+  FaBook, 
+  FaUserFriends, 
+  FaChartLine, 
+  FaSync, 
+  FaArrowRight 
+} from "react-icons/fa";
+import { GiBookshelf } from "react-icons/gi";
 
 const Dashboard = () => {
-  const { currency, backendUrl, getToken, isEducator } = useContext(AppContext);
-  const [dashboardData, setDashboardData] = useState(null);
+  const { backendUrl, getToken, isEducator, navigate, userData } =
+    useContext(AppContext);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const [dashboardData, setDashboardData] = useState({
+    totalStudents: 0,
+    totalCourses: 0,
+  });
+
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return "Good morning";
+    if (hour < 18) return "Good afternoon";
+    return "Good evening";
+  };
 
   const fetchDashboardData = async () => {
     try {
+      setIsLoading(true);
       const token = await getToken();
-      const { data } = await axios.get(backendUrl + "/api/educator/dashboard", {
-        headers: { Authorization: `Bearer ${token}` },
+
+      const studentsResponse = await axios.get(
+        backendUrl + "/api/educator/my-students",
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      const coursesResponse = await axios.get(
+        backendUrl + "/api/educator/courses",
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      setDashboardData({
+        totalStudents: studentsResponse.data.success
+          ? studentsResponse.data.students.length
+          : 0,
+        totalCourses: coursesResponse.data.success
+          ? coursesResponse.data.courses.length
+          : 0,
       });
 
-      if (data.success) {
-        setDashboardData(data.dashboardData);
-      } else {
-        toast.error(data.message);
-      }
+      setIsLoading(false);
     } catch (error) {
       toast.error(error.message);
+      setIsLoading(false);
     }
   };
 
@@ -32,77 +69,149 @@ const Dashboard = () => {
     }
   }, [isEducator]);
 
-  return dashboardData ? (
-    <div className="min-h-screen flex flex-col items-start justify-between gap-8 md:p-8 md:pb-0 p-4 pt-8 pb-0">
-      <div className="space-y-5">
-        <div className="flex flex-wrap gap-5 items-center">
-          <div className="flex items-center gap-3 shadow-card border border-blue-500 p-4 w-56 rounded-md">
-            <img src={assets.patients_icon} alt="patients_icon" />
+  if (!isEducator || isLoading) {
+    return <Loading />;
+  }
+
+  return (
+    <div className="bg-blue-50 min-h-screen p-6 sm:p-8">
+      <div className="max-w-7xl mx-auto">
+        <div className="bg-white rounded-xl shadow-md p-6 mb-8">
+          <div className="flex items-center justify-between">
             <div>
-              <p className="text-2xl font-medium text-gray-600">
-                {dashboardData.enrolledStudentsData.length}
+              <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-2">
+                {getGreeting()}, {userData.name}
+              </h1>
+              <p className="text-gray-600">
+                Here's an overview of your teaching activity
               </p>
-              <p className="text-base text-gray-500">Total Enrollments</p>
             </div>
-          </div>
-          <div className="flex items-center gap-3 shadow-card border border-blue-500 p-4 w-56 rounded-md">
-            <img src={assets.appointments_icon} alt="patients_icon" />
-            <div>
-              <p className="text-2xl font-medium text-gray-600">
-                {dashboardData.totalCourses}
-              </p>
-              <p className="text-base text-gray-500">Total Courses</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-3 shadow-card border border-blue-500 p-4 w-56 rounded-md">
-            <img src={assets.earning_icon} alt="patients_icon" />
-            <div>
-              <p className="text-2xl font-medium text-gray-600">
-                {currency}
-                {Math.floor(dashboardData.totalEarnings)}
-              </p>
-              <p className="text-base text-gray-500">Total Earnings</p>
+            <div className="hidden md:block">
+              <div className="text-right">
+                <p className="text-sm text-gray-500">
+                  {new Date().toLocaleDateString("en-US", {
+                    weekday: "long",
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })}
+                </p>
+              </div>
             </div>
           </div>
         </div>
-        <div>
-          <h2 className="pb-4 text-lg font-medium">Latest Enrollments</h2>
-          <div className="flex flex-col items-center max-w-4xl w-full overflow-hidden rounded-md bg-white border border-gray-500/20">
-            <table className="table-fixed md:table-auto w-full overflow-hidden">
-              <thead className="text-gray-900 border-b border-gray-500/20 text-sm text-left">
-                <tr>
-                  <th className="px-4 py-3 font-semibold text-center hidden sm:table-cell">
-                    #
-                  </th>
-                  <th className="px-4 py-3 font-semibold">Student Name</th>
-                  <th className="px-4 py-3 font-semibold">Course Title</th>
-                </tr>
-              </thead>
-              <tbody className="text-sm text-gray-500">
-                {dashboardData.enrolledStudentsData.map((item, index) => (
-                  <tr key={index} className="border-b border-gray-500/20">
-                    <td className="px-4 py-3 text-center hidden sm:table-cell">
-                      {index + 1}
-                    </td>
-                    <td className="md:px-4 px-2 py-3 flex items-center space-x-3">
-                      <img
-                        src={item.student.imageUrl}
-                        alt="Profile"
-                        className="w-9 h-9 rounded-full"
-                      />
-                      <span className="truncate">{item.student.name}</span>
-                    </td>
-                    <td className="px-4 py-3 truncate">{item.courseTitle}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+        <div className="flex justify-center gap-6 mb-8">
+          <div className="bg-white rounded-xl shadow-md p-6 w-64">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-500">
+                  Total Students
+                </p>
+                <p className="text-2xl font-bold text-gray-800">
+                  {dashboardData.totalStudents}
+                </p>
+              </div>
+              <div className="p-3 bg-blue-100 rounded-full">
+                <FaUsers className="h-8 w-8 text-blue-600" />
+              </div>
+            </div>
           </div>
+
+          <div className="bg-white rounded-xl shadow-md p-6 w-64">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-500">My Courses</p>
+                <p className="text-2xl font-bold text-gray-800">
+                  {dashboardData.totalCourses}
+                </p>
+              </div>
+              <div className="p-3 bg-green-100 rounded-full">
+                <FaBook className="h-8 w-8 text-green-600" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <h2 className="text-2xl font-bold text-gray-800 mb-4">Quick Actions</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <div
+            onClick={() => navigate("/educator/students")}
+            className="bg-white rounded-xl shadow-md p-6 cursor-pointer transform transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+          >
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-xl font-semibold text-gray-800">
+                Student Management
+              </h3>
+              <div className="p-2 bg-blue-100 rounded-full">
+                <FaUserFriends className="h-6 w-6 text-blue-600" />
+              </div>
+            </div>
+            <p className="text-gray-600 mb-4">
+              Manage your students and their course enrollments. Add new
+              students or remove existing ones.
+            </p>
+            <div className="flex items-center text-blue-600 font-medium">
+              <span>Manage Students</span>
+              <FaArrowRight className="h-5 w-5 ml-1" />
+            </div>
+          </div>
+
+          <div
+            onClick={() => navigate("/educator/progress")}
+            className="bg-white rounded-xl shadow-md p-6 cursor-pointer transform transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+          >
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-xl font-semibold text-gray-800">
+                Student Progress
+              </h3>
+              <div className="p-2 bg-green-100 rounded-full">
+                <FaChartLine className="h-6 w-6 text-green-600" />
+              </div>
+            </div>
+            <p className="text-gray-600 mb-4">
+              Track student progress across your courses. See completion rates
+              and identify students who may need assistance.
+            </p>
+            <div className="flex items-center text-green-600 font-medium">
+              <span>View Progress</span>
+              <FaArrowRight className="h-5 w-5 ml-1" />
+            </div>
+          </div>
+
+          <div
+            onClick={() => navigate("/educator/courses")}
+            className="bg-white rounded-xl shadow-md p-6 cursor-pointer transform transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+          >
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-xl font-semibold text-gray-800">
+                My Courses
+              </h3>
+              <div className="p-2 bg-purple-100 rounded-full">
+                <GiBookshelf className="h-6 w-6 text-purple-600" />
+              </div>
+            </div>
+            <p className="text-gray-600 mb-4">
+              Manage your created courses, edit content, and add new materials.
+              Create new courses or update existing ones.
+            </p>
+            <div className="flex items-center text-purple-600 font-medium">
+              <span>View Courses</span>
+              <FaArrowRight className="h-5 w-5 ml-1" />
+            </div>
+          </div>
+        </div>
+
+        <div className="flex justify-end">
+          <button
+            onClick={fetchDashboardData}
+            className="flex items-center justify-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+          >
+            <FaSync className="h-4 w-4 mr-2" />
+            Refresh Dashboard
+          </button>
         </div>
       </div>
     </div>
-  ) : (
-    <Loading />
   );
 };
 
