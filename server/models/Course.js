@@ -8,6 +8,17 @@ const lectureSchema = new mongoose.Schema(
     lectureUrl: { type: String, required: true },
     isPreviewFree: { type: Boolean, required: true },
     lectureOrder: { type: Number, required: true },
+    contentType: { type: String, required: true },
+  },
+  { _id: false }
+);
+
+const activitySchema = new mongoose.Schema(
+  {
+    activityId: { type: String, required: true },
+    activityTitle: { type: String, required: true },
+    activityOrder: { type: Number, required: true },
+    activityUrl: { type: String, required: true },
   },
   { _id: false }
 );
@@ -17,20 +28,22 @@ const chapterSchema = new mongoose.Schema(
     chapterId: { type: String, required: true },
     chapterOrder: { type: Number, required: true },
     chapterTitle: { type: String, required: true },
-    chapterContent: [lectureSchema], // Use the lecture schema here
+    chapterContent: [lectureSchema],
+    chapterActivities: [activitySchema],
   },
   { _id: false }
 );
 
+
+
 const courseSchema = new mongoose.Schema(
   {
     courseTitle: { type: String, required: true },
+    courseCode: { type: String, required: true, unique: true },
     courseDescription: { type: String, required: true },
     courseThumbnail: { type: String },
-    coursePrice: { type: Number, required: true },
     isPublished: { type: Boolean, default: true },
-    discount: { type: Number, required: true, min: 0, max: 100 },
-    courseContent: [chapterSchema], // Use the chapter schema here
+    courseContent: [chapterSchema],
     educator: {
       type: String,
       ref: "User",
