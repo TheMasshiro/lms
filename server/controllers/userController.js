@@ -5,6 +5,108 @@ import User from "../models/User.js";
 import axios from "axios";
 import { clerkClient } from "@clerk/express";
 
+// update role to student
+export const updateRoleToStudent = async (req, res) => {
+  try {
+    const userId = req.auth.userId;
+
+    await clerkClient.users.updateUserMetadata(userId, {
+      publicMetadata: {
+        role: "student",
+      },
+    });
+
+    res.json({ success: true, message: "Welcome to Learnify" });
+  } catch (error) {
+    res.json({ success: false, message: error.message });
+  }
+};
+
+export const batchEnrollToCourse = async (req, res) => {
+  try {
+    const { courseCode, userId } = req.body;
+
+    if (!courseCode || !userId || !Array.isArray(userId)) {
+      return res.json({
+        success: false,
+        message: "Course Code and User ID are required",
+      });
+    }
+
+    const courseData = await Course.findOne({ courseCode });
+    if (!courseData) {
+      return res.json({ success: false, message: "Course not found" });
+    }
+
+    const alreadyEnrolled = [];
+    const successfullyEnrolled = [];
+
+    for (const userIdElement of userId) {
+      const userData = await User.findById(userIdElement);
+      if (!userData) {
+        continue;
+      }
+
+      const alreadyInCourse = userData.enrolledCourses.includes(courseData._id);
+      if (alreadyInCourse) {
+        alreadyEnrolled.push(userData.id);
+        continue;
+      }
+
+      courseData.enrolledStudents.push(userData._id);
+      userData.enrolledCourses.push(courseData._id);
+
+      await userData.save();
+      successfullyEnrolled.push(userData.email);
+    }
+
+    await courseData.save();
+
+    res.json({
+      success: true,
+      enrolled: successfullyEnrolled,
+      skipped: alreadyEnrolled,
+      message: `Enrolled ${successfullyEnrolled.length} student(s). Skipped ${alreadyEnrolled.length} already enrolled.`,
+    });
+  } catch (error) {
+    res.json({ success: false, message: error.message });
+  }
+};
+
+// Enroll User to Course
+export const enrollToCourse = async (req, res) => {
+  try {
+    const { courseCode } = req.body;
+
+    if (!courseCode) {
+      return res.json({ success: false, message: "Course Code is required" });
+    }
+
+    const userId = req.auth.userId;
+
+    const courseData = await Course.findOne({ courseCode });
+    const userData = await User.findById(userId);
+
+    if (!courseData || !userData) {
+      return res.json({ success: false, message: "Course or User not found" });
+    }
+
+    if (userData.enrolledCourses.includes(courseData._id)) {
+      return res.json({ success: false, message: "Already Enrolled" });
+    }
+
+    courseData.enrolledStudents.push(userData);
+    await courseData.save();
+
+    userData.enrolledCourses.push(courseData._id);
+    await userData.save();
+
+    res.json({ success: true });
+  } catch (error) {
+    res.json({ success: false, message: error.message });
+  }
+};
+
 // Get User Data
 export const getUserData = async (req, res) => {
   try {
@@ -23,56 +125,81 @@ export const getUserData = async (req, res) => {
 
 // Get Url Endpoint for Success URL
 // This function determines the success URL based on the user's role
-const get_success_url = async (req, res) => {
+const getSuccessUrl = async (req, res) => {
   try {
     const userId = req.auth.userId;
     const response = await clerkClient.users.getUser(userId);
     if (response.publicMetadata.role !== "educator") {
       return "student";
     } else {
-      return "educator/enrollment";
+      return "educator";
     }
   } catch (error) {
     res.json({ success: false, message: error.message });
   }
 };
 
-// Purchase Course
-export const purchaseCourse = async (req, res) => {
+// Get Role Price
+// This function determines the price based on the user's role
+const rolePrice = async (req, res) => {
   try {
-    const { courseId } = req.body;
+    const userId = req.auth.userId;
+    const response = await clerkClient.users.getUser(userId);
+    if (response.publicMetadata.role !== "educator") {
+      return 99;
+    } else {
+      return 199;
+    }
+  } catch (error) {
+    res.json({ success: false, message: error.message });
+  }
+};
+
+const roleName = async (req, res) => {
+  try {
+    const userId = req.auth.userId;
+    const response = await clerkClient.users.getUser(userId);
+    if (response.publicMetadata.role !== "educator") {
+      return "Lifetime Access as a Student";
+    } else {
+      return "Lifetime Access as an Educator";
+    }
+  } catch (error) {
+    res.json({ success: false, message: error.message });
+  }
+};
+
+// Purchase Access
+export const purchaseStatus = async (req, res) => {
+  try {
     const { origin } = req.headers;
     const userId = req.auth.userId;
-    const courseData = await Course.findById(courseId);
     const userData = await User.findById(userId);
 
-    if (!userData || !courseData) {
+    if (!userData) {
       return res.json({ success: false, message: "Data Not Found" });
     }
 
-    const computedAmount =
-      courseData.coursePrice -
-      (courseData.discount * courseData.coursePrice) / 100;
-    const amountInCentavos = Math.round(computedAmount * 100);
+    const rolePriceValue = await rolePrice(req, res);
+    const computedAmount = Math.round(rolePriceValue * 100);
 
     const purchaseData = {
-      courseId: courseData._id,
       userId,
-      amount: computedAmount.toFixed(2),
+      amount: rolePriceValue,
     };
 
-    const newPurchase = await Purchase.create(purchaseData);
-    const courseName = courseData.courseTitle || "Course Purchase";
-    const currency = (process.env.CURRENCY || "PHP").toUpperCase();
+    const roleNameValue = await roleName(req, res);
 
-    const url_endpoint = await get_success_url(req, res);
+    const newPurchase = await Purchase.create(purchaseData);
+    const currency = (process.env.CURRENCY || "PHP").toUpperCase();
+    const url_endpoint = await getSuccessUrl(req, res);
 
     const lineItems = [
       {
         currency: currency,
-        amount: amountInCentavos,
-        description: courseName,
-        name: courseName,
+        amount: computedAmount,
+        description: roleNameValue,
+        name: roleNameValue,
         quantity: 1,
       },
     ];
@@ -122,17 +249,21 @@ export const purchaseCourse = async (req, res) => {
   }
 };
 
-// Purchase Package
-export const purchasePackage = async (req, res) => {};
-
 // Users Enrolled Courses With Lecture Links
 export const userEnrolledCourses = async (req, res) => {
   try {
     const userId = req.auth.userId;
 
-    const userData = await User.findById(userId).populate("enrolledCourses");
+    const user = await User.findById(userId).populate({
+      path: "enrolledCourses",
+      select: "-enrolledStudents",
+      populate: {
+        path: "educator",
+        select: "-password",
+      },
+    });
 
-    res.json({ success: true, enrolledCourses: userData.enrolledCourses });
+    res.json({ success: true, enrolledCourses: user.enrolledCourses });
   } catch (error) {
     res.json({ success: false, message: error.message });
   }
@@ -231,5 +362,134 @@ export const addUserRating = async (req, res) => {
     return res.json({ success: true, message: "Rating added" });
   } catch (error) {
     return res.json({ success: false, message: error.message });
+  }
+};
+
+export const addCourseCount = async (req, res) => {
+  try {
+    const userId = req.auth.userId;
+
+    const userData = await User.findById(userId);
+
+    if (!userData) {
+      return res.json({ success: false, message: "User Not Found" });
+    }
+
+    // If the user is a member, no message needed, just proceed
+    if (userData.isMember) {
+      await userData.save();
+      return res.json({
+        success: true,
+      });
+    }
+
+    // Increment the courses count
+    userData.coursesCount += 1;
+
+    const trialLimit = 3;
+    const coursesLeft = trialLimit - userData.coursesCount;
+
+    // Check if the user has reached the trial limit
+    if (coursesLeft > 0) {
+      await userData.save();
+      res.json({
+        success: true,
+        message: `You have ${coursesLeft} courses left in your trial.`,
+      });
+    } else {
+      await userData.save();
+      res.json({
+        success: false,
+        message: "You have reached the maximum course limit for your trial.",
+      });
+    }
+  } catch (error) {
+    res.json({ success: false, message: error.message });
+  }
+};
+
+export const addEnrollmentCount = async (req, res) => {
+  try {
+    const userId = req.auth.userId;
+
+    const userData = await User.findById(userId);
+
+    if (!userData) {
+      return res.json({ success: false, message: "User Not Found" });
+    }
+
+    if (userData.isMember) {
+      await userData.save();
+      return res.json({
+        success: true,
+      });
+    }
+
+    userData.enrollmentCount += 1;
+
+    const trialLimit = 3;
+    const enrollmentsLeft = trialLimit - userData.enrollmentCount;
+
+    if (enrollmentsLeft > 0) {
+      await userData.save();
+      res.json({
+        success: true,
+        message: `You have ${enrollmentsLeft} enrollments left in your trial.`,
+      });
+    } else {
+      await userData.save();
+      res.json({
+        success: false,
+        message:
+          "You have reached the maximum enrollment limit for your trial.",
+      });
+    }
+  } catch (error) {
+    res.json({ success: false, message: error.message });
+  }
+};
+
+// Batch Enrollment Count
+export const batchEnrollmentCount = async (req, res) => {
+  try {
+    const { userId } = req.body;
+
+    if (!userId || !Array.isArray(userId)) {
+      return res.json({ success: false, message: "User ID is required" });
+    }
+
+    const userData = await User.findById(userId[0]);
+    if (!userData) {
+      return res.json({ success: false, message: "User Not Found" });
+    }
+
+    if (userData.isMember) {
+      await userData.save();
+      return res.json({
+        success: true,
+      });
+    }
+
+    userData.enrollmentCount += 1;
+
+    const trialLimit = 3;
+    const enrollmentsLeft = trialLimit - userData.enrollmentCount;
+
+    if (enrollmentsLeft > 0) {
+      await userData.save();
+      res.json({
+        success: true,
+        message: `The user has ${enrollmentsLeft} enrollments left in their trial.`,
+      });
+    } else {
+      await userData.save();
+      res.json({
+        success: false,
+        message:
+          "The student has reached the maximum enrollment limit for their trial.",
+      });
+    }
+  } catch (error) {
+    res.json({ success: false, message: error.message });
   }
 };
