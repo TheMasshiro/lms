@@ -101,8 +101,6 @@ export const paymongoWebhooks = async (request, response) => {
         console.log(`Unhandled event type ${event.type}`);
     }
 
-    console.log("Webhook received:", event);
-
     response.status(200).json({ received: true });
   } catch (err) {
     response.status(400).send(`Webhook Error: ${err.message}`);
