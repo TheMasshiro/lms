@@ -87,7 +87,7 @@ const App = () => {
                                 <Route path="/contacts" element={<Contact />} />
                                 <Route path="/editor" element={<Editor />} />
                                 <Route path="/quiz" element={<Quiz />} />
-                                <Route path="/getstarted" element={<GetStarted />} />
+                                <Route path="/get-started" element={<GetStarted />} />
                                 <Route path="/game-info" element={<GameInfoCard />} />
                                 <Route path="/tictactoe" element={<Tictactoe />} />
                                 <Route path="/snake" element={<Snake />} />
