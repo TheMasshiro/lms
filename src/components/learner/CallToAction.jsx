@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { assets } from "../../assets/assets";
+import { FaArrowRight } from "react-icons/fa";
 
 const CallToAction = () => {
   const [isClicked, setIsClicked] = useState(false);
@@ -22,7 +22,6 @@ const CallToAction = () => {
         anywhere.
       </p>
       <div className="flex items-center font-medium gap-6 mt-4">
-        {/* "Get started" Button */}
         <a
           href="/getstarted"
           className="px-10 py-3 rounded-md text-white bg-blue-600 transition-all duration-300 ease-in-out hover:bg-blue-700 hover:scale-105"
@@ -30,17 +29,13 @@ const CallToAction = () => {
           Games
         </a>
 
-        {/* "Learn more" Button */}
         <button
-          onClick={handleClick} // Trigger state change and navigation on click
+          onClick={handleClick}
           className="flex items-center gap-2 px-6 py-3 rounded-md text-blue-600 border transition-all duration-300 ease-in-out hover:bg-blue-600 hover:text-white hover:scale-105"
         >
           Learn more
-          {/* Conditionally render the arrow icon with transition for fade and scale */}
           {!isClicked && (
-            <img
-              src={assets.arrow_icon} // Ensure you have a valid arrow icon in assets
-              alt="arrow_icon"
+            <FaArrowRight
               className={`transition-all duration-300 ease-in-out ${
                 isClicked ? "opacity-0 scale-90" : "opacity-100 scale-100"
               }`}
