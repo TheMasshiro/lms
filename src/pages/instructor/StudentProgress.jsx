@@ -4,10 +4,17 @@ import { toast } from "react-toastify";
 import Loading from "../../components/learner/Loading";
 import { AppContext } from "../../context/AppContext";
 import { HiPlus } from "react-icons/hi";
-import { FaExclamationTriangle, FaSync, FaTimes, FaSpinner, FaFileAlt } from "react-icons/fa";
+import {
+  FaExclamationTriangle,
+  FaSync,
+  FaTimes,
+  FaSpinner,
+  FaFileAlt,
+} from "react-icons/fa";
 
 const StudentProgress = () => {
-  const { backendUrl, getToken, isEducator, calculateNoOfLectures, navigate } = useContext(AppContext);
+  const { backendUrl, getToken, isEducator, calculateNoOfLectures, navigate } =
+    useContext(AppContext);
   const [courses, setCourses] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -90,48 +97,52 @@ const StudentProgress = () => {
       setIsModalLoading(true);
       setSelectedStudent(student);
       setIsModalOpen(true);
-      
+
       const token = await getToken();
       const enrolledCoursesResponse = await axios.post(
         backendUrl + "/api/educator/student-courses",
         { userId: student.id },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      
+
       if (!enrolledCoursesResponse.data.success) {
-        throw new Error(enrolledCoursesResponse.data.message || "Failed to fetch enrolled courses");
+        throw new Error(
+          enrolledCoursesResponse.data.message ||
+            "Failed to fetch enrolled courses"
+        );
       }
-      
-      const studentCourses = enrolledCoursesResponse.data.enrolledCourses.reverse();
+
+      const studentCourses =
+        enrolledCoursesResponse.data.enrolledCourses.reverse();
       setEnrolledCourses(studentCourses);
-      
+
       const progressData = await Promise.all(
         studentCourses
-          .filter((enrolledCourse) => 
+          .filter((enrolledCourse) =>
             courses.some((course) => course._id === enrolledCourse._id)
           )
           .map(async (course) => {
             const { data } = await axios.post(
-              backendUrl + "/api/user/get-course-progress",
-              { courseId: course._id },
+              backendUrl + "/api/user/get-user-course-progress",
+              { courseId: course._id, userId: student.id },
               { headers: { Authorization: `Bearer ${token}` } }
             );
-            
+
             const matchedCourse = courses.find((c) => c._id === course._id);
             let totalLectures = calculateNoOfLectures(matchedCourse);
             const lectureCompleted = data.progressData
               ? data.progressData.lectureCompleted.length
               : 0;
-              
-            return { 
+
+            return {
               courseId: course._id,
               courseTitle: matchedCourse?.courseTitle || "Unknown Course",
-              totalLectures, 
-              lectureCompleted 
+              totalLectures,
+              lectureCompleted,
             };
           })
       );
-      
+
       setStudentCoursesProgress(progressData);
     } catch (error) {
       toast.error(error.message || "Error loading student progress");
@@ -153,6 +164,11 @@ const StudentProgress = () => {
     if (percentage >= 75) return "bg-blue-500";
     if (percentage >= 25) return "bg-yellow-500";
     return "bg-red-500";
+  };
+
+  const getProgressPercentage = (completed, total) => {
+    if (!total) return 0;
+    return Math.round((completed * 100) / total);
   };
 
   if (!isEducator || isLoading) {
@@ -417,7 +433,7 @@ const StudentProgress = () => {
                 <h3 className="text-lg font-semibold text-gray-800 mb-2">
                   Course Progress
                 </h3>
-                
+
                 {isModalLoading ? (
                   <div className="text-center py-8 bg-gray-50 rounded-lg">
                     <FaSpinner className="animate-spin h-10 w-10 mx-auto text-blue-500 mb-3" />
@@ -428,9 +444,9 @@ const StudentProgress = () => {
                 ) : studentCoursesProgress.length > 0 ? (
                   <div className="space-y-4">
                     {studentCoursesProgress.map((courseProgress) => {
-                      const percentage = Math.round(
-                        (courseProgress.lectureCompleted * 100) /
-                          courseProgress.totalLectures
+                      const percentage = getProgressPercentage(
+                        courseProgress.lectureCompleted,
+                        courseProgress.totalLectures
                       );
 
                       return (
