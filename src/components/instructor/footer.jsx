@@ -1,5 +1,5 @@
-import React from "react";
 import { assets } from "../../assets/assets";
+import { FaFacebook, FaTwitter, FaInstagram } from "react-icons/fa";
 
 const footer = () => {
   return (
@@ -12,14 +12,14 @@ const footer = () => {
         </p>
       </div>
       <div className="flex items-center gap-3 max-md:mt-4">
-        <a href="#">
-          <img src={assets.facebook_icon} alt="facebook_icon" />
+        <a href="#" className="text-gray-600 hover:text-blue-600 transition-colors">
+          <FaFacebook className="w-5 h-5" />
         </a>
-        <a href="#">
-          <img src={assets.twitter_icon} alt="twitter_icon" />
+        <a href="#" className="text-gray-600 hover:text-blue-400 transition-colors">
+          <FaTwitter className="w-5 h-5" />
         </a>
-        <a href="#">
-          <img src={assets.instagram_icon} alt="instagram_icon" />
+        <a href="#" className="text-gray-600 hover:text-pink-600 transition-colors">
+          <FaInstagram className="w-5 h-5" />
         </a>
       </div>
     </footer>
