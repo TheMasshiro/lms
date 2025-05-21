@@ -19,9 +19,9 @@ const enablePaymongoWebhook = async () => {
     );
 
     const enabled = response.data.data.attributes.status;
-    console.log("Webhook enabled:", enabled);
+    // do not log success
   } catch (error) {
-    console.log("Webhook is already enabled");
+    // do not log error
   }
 };
 

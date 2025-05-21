@@ -36,10 +36,7 @@ const paymongoWH = async () => {
     );
 
     const { live_mode, secret_key, status } = response.data.data.attributes;
-
-    console.log("Secret Key:", secret_key);
-    console.log("Live Mode:", live_mode);
-    console.log("Status:", status);
+    // do not log success
   } catch (error) {
     console.error(
       "Error creating webhook:",
