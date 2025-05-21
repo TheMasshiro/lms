@@ -9,7 +9,7 @@ const EditorPage = () => {
 
   return user ? (
     <ChakraProvider theme={theme}>
-      <Box minH="100vh" bg="white" color="gray.800" px={6} py={8}>
+      <Box minH="100vh" bg="#f8f9fa" color="gray.700" px={6} py={8}>
         <CodeEditor />
       </Box>
     </ChakraProvider>
