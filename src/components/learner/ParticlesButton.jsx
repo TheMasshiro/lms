@@ -1,6 +1,4 @@
-import React from "react";
-// Correct path to the CSS file
-import "../css/ParticlesButton.scss"; // Adjust the path if necessary
+import "../css/ParticlesButton.scss";
 
 const ParticlesButton = ({ children }) => {
   return (
