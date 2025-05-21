@@ -1,8 +1,7 @@
-import React from "react";
 import { assets } from "../../assets/assets";
-import SearchBar from "./searchBar";
 
-const hero = () => {
+
+const Hero = () => {
   return (
     <div className="flex flex-col items-center justify-center w-full md:pt-30 pt-20 px-7 md:px-0 space-y-7 text-center bg-gradient-to-b from-cyan-100/70">
       <h1 className="md:text-home-heading-large text-home-heading-small relative font-bold text-gray-800 max-w-3xl mx-auto">
@@ -23,9 +22,8 @@ const hero = () => {
         Learnify empowers you to grow and succeed in a supportive and
         interactive learning environment.
       </p>
-      <SearchBar />
     </div>
   );
 };
 
-export default hero;
+export default Hero;
