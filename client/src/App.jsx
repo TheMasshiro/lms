@@ -33,7 +33,7 @@ import CourseDetails from "./pages/learner/CourseDetails";
 import CoursesList from "./pages/learner/CoursesList";
 import Editor from "./pages/learner/editor/Editor";
 import Enrollment from "./pages/learner/Enrollment";
-import GetStarted from "./pages/learner/GetStarted";
+import GetStarted from "./pages/learner/getstarted";
 import Home from "./pages/learner/home";
 import StudentHome from "./pages/learner/home/student";
 import PersonalInfo from "./pages/learner/PersonalInfo";
