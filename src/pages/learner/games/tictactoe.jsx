@@ -103,26 +103,36 @@ const Tictactoe = () => {
       <p>
         {message || (
           <>
-            Turn: {go === "X" ? <FaTimes className="icon-sm" /> : <FaRegCircle className="icon-sm" />}
+            Turn:{" "}
+            {go === "X" ? (
+              <FaTimes className="icon-sm" />
+            ) : (
+              <FaRegCircle className="icon-sm" />
+            )}
           </>
         )}
       </p>
       <div className="board">
         {cells.map((cell, index) => (
-          <Cell 
-            key={index} 
-            value={cell} 
+          <Cell
+            key={index}
+            value={cell}
             onClick={() => handleClick(index)}
-            renderIcon={renderIcon} 
+            renderIcon={renderIcon}
           />
         ))}
       </div>
       {isGameOver && (
         <div className="popup">
-          <h3>
+          <h3 className="flex items-center justify-center gap-2">
             {winner ? (
               <>
-                {winner === "X" ? <FaTimes className="icon-md" /> : <FaRegCircle className="icon-md" />} WON!
+                {winner === "X" ? (
+                  <FaTimes className="icon-md" />
+                ) : (
+                  <FaRegCircle className="icon-md" />
+                )}
+                <span>WON!</span>
               </>
             ) : (
               "It's a draw!"
