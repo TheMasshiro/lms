@@ -8,6 +8,7 @@ import { clerkMiddleware } from "@clerk/express";
 import { clerkWebhooks, paymongoWebhooks } from "./controllers/webhooks.js";
 import educatorRouter from "./routes/educatorRoutes.js";
 import courseRouter from "./routes/courseRoute.js";
+import enablePaymongoWebhook from "./configs/paymongo_wh.js";
 
 // Initialize Express
 const app = express();
@@ -33,6 +34,8 @@ app.post(
   }),
   paymongoWebhooks
 );
+
+enablePaymongoWebhook();
 
 // Port
 const PORT = process.env.PORT || 5000;
