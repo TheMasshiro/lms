@@ -8,14 +8,21 @@ const userSchema = new mongoose.Schema(
     imageUrl: { type: String, required: true },
     isMember: { type: Boolean, default: false, required: true },
     coursesCount: { type: Number, default: 0, required: true },
-    EnrollmentCount: { type: Number, default: 0, required: true },
+    enrollmentCount: { type: Number, default: 0, required: true },
     enrolledCourses: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Course",
       },
     ],
+    students: [
+      {
+        type: String,
+        ref: "User",
+      },
+    ],
   },
+
   { timestamps: true }
 );
 
