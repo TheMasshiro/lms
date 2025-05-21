@@ -1,8 +1,8 @@
-import { createContext, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import humanizeDuration from "humanize-duration";
 import { useAuth, useUser } from "@clerk/clerk-react";
 import axios from "axios";
+import humanizeDuration from "humanize-duration";
+import { createContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 export const AppContext = createContext();
@@ -16,6 +16,7 @@ export const AppContextProvider = ({ children }) => {
   const { user } = useUser();
 
   const [isEducator, setIsEducator] = useState(false);
+  const [isStudent, setIsStudent] = useState(false);
   const [allCourses, setAllCourses] = useState([]);
   const [enrolledCourses, setEnrolledCourses] = useState([]);
   const [userData, setUserData] = useState(null);
@@ -76,6 +77,10 @@ export const AppContextProvider = ({ children }) => {
   const fetchUserData = async () => {
     if (user.publicMetadata.role === "educator") {
       setIsEducator(true);
+    }
+
+    if (user.publicMetadata.role === "student") {
+      setIsStudent(true);
     }
 
     try {
@@ -144,6 +149,8 @@ export const AppContextProvider = ({ children }) => {
     setUserData,
     getToken,
     fetchAllCourses,
+    isStudent,
+    setIsStudent,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
