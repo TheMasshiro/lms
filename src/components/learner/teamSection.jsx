@@ -1,5 +1,12 @@
-import React from "react";
 import { dummyTestimonial } from "../../assets/assets";
+import { 
+  FaPlay, 
+  FaLaptopCode, 
+  FaBrain, 
+  FaChartLine,
+  FaVideo 
+} from "react-icons/fa";
+import { MdQuiz } from "react-icons/md";
 
 const TeamSection = () => {
   return (
@@ -58,28 +65,36 @@ const TeamSection = () => {
           </h3>
           <div className="grid md:grid-cols-2 gap-8 text-left max-w-4xl mx-auto text-gray-700">
             <div className="p-6 bg-white rounded-lg shadow-md">
-              <h4 className="font-bold mb-2">📺 Watch</h4>
+              <h4 className="font-bold mb-2 flex items-center">
+                <FaPlay className="text-cyan-600 mr-2" /> Watch
+              </h4>
               <p>
                 Learn through fun and engaging videos that explain tech concepts
                 step-by-step.
               </p>
             </div>
             <div className="p-6 bg-white rounded-lg shadow-md">
-              <h4 className="font-bold mb-2">💻 Code</h4>
+              <h4 className="font-bold mb-2 flex items-center">
+                <FaLaptopCode className="text-cyan-600 mr-2" /> Code
+              </h4>
               <p>
-                Practice coding with our built-in compiler — no installations
+                Practice coding with our built-in code editor — no installations
                 needed.
               </p>
             </div>
             <div className="p-6 bg-white rounded-lg shadow-md">
-              <h4 className="font-bold mb-2">🧠 Quiz</h4>
+              <h4 className="font-bold mb-2 flex items-center">
+                <FaBrain className="text-cyan-600 mr-2" /> Quiz
+              </h4>
               <p>
                 Test your knowledge after lessons with quizzes to help retain
-                what you’ve learned.
+                what you've learned.
               </p>
             </div>
             <div className="p-6 bg-white rounded-lg shadow-md">
-              <h4 className="font-bold mb-2">📊 Progress</h4>
+              <h4 className="font-bold mb-2 flex items-center">
+                <FaChartLine className="text-cyan-600 mr-2" /> Progress
+              </h4>
               <p>
                 Track your progress, improve over time, and get closer to your
                 goals.
@@ -99,28 +114,28 @@ const TeamSection = () => {
         </p>
         <div className="mt-10 space-y-6 max-w-2xl mx-auto text-gray-700 text-left md:text-base">
           <div>
-            <span className="font-semibold text-cyan-600">
-              📺 Watch Lessons:
+            <span className="font-semibold text-cyan-600 flex items-center inline-flex">
+              <FaVideo className="mr-2" /> Watch Lessons:
             </span>{" "}
             Learn coding and tech skills with easy-to-follow video tutorials.
           </div>
           <div>
-            <span className="font-semibold text-cyan-600">
-              💻 Practice in the Compiler:
+            <span className="font-semibold text-cyan-600 flex items-center inline-flex">
+              <FaLaptopCode className="mr-2" /> Practice in the Code Editor:
             </span>{" "}
-            Type and test your code directly inside our browser-based compiler.
+            Type and test your code directly inside our browser-based code editor.
             No need to download or install anything!
           </div>
           <div>
-            <span className="font-semibold text-cyan-600">
-              🧠 Take Quizzes:
+            <span className="font-semibold text-cyan-600 flex items-center inline-flex">
+              <MdQuiz className="mr-2" /> Take Quizzes:
             </span>{" "}
             After each module, check your knowledge with short quizzes to help
-            reinforce what you’ve learned.
+            reinforce what you've learned.
           </div>
           <div>
-            <span className="font-semibold text-cyan-600">
-              📊 Track Progress:
+            <span className="font-semibold text-cyan-600 flex items-center inline-flex">
+              <FaChartLine className="mr-2" /> Track Progress:
             </span>{" "}
             Monitor your improvements and achievements as you go.
           </div>
