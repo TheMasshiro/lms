@@ -317,6 +317,26 @@ export const getUserCourseProgress = async (req, res) => {
   }
 };
 
+// get specific User Course Progress
+export const getCourseProgress = async (req, res) => {
+  try {
+    const { userId, courseId } = req.body;
+
+    if (!userId || !courseId) {
+      return res.json({ 
+        success: false, 
+        message: "Both userId and courseId are required" 
+      });
+    }
+
+    const progressData = await CourseProgress.findOne({ userId, courseId });
+
+    res.json({ success: true, progressData });
+  } catch (error) {
+    res.json({ success: false, message: error.message });
+  }
+};
+
 // Add User Ratings to Course
 export const addUserRating = async (req, res) => {
   const userId = req.auth.userId;
