@@ -1,11 +1,12 @@
 import { useUser } from "@clerk/clerk-react";
 import { useRef, useState, useEffect } from "react";
-import { dummyQuestions } from "../../../assets/assets";
+import { RANDOM_TECH_QUESTIONS } from "./configs/questions";
 import "../../../components/css/quiz.css";
 
 const Quiz = () => {
+  const [quizQuestions, setQuizQuestions] = useState([]);
   const [index, setIndex] = useState(0);
-  const [question, setQuestion] = useState(dummyQuestions[index]);
+  const [question, setQuestion] = useState(null);
   const [lock, setLock] = useState(false);
   const [score, setScore] = useState(0);
   const [result, setResult] = useState(false);
@@ -20,6 +21,22 @@ const Quiz = () => {
 
   const optionArray = [option1, option2, option3, option4];
 
+  const shuffleArray = (array) => {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+  };
+
+  useEffect(() => {
+    const shuffledQuestions = shuffleArray(RANDOM_TECH_QUESTIONS);
+    const selectedQuestions = shuffledQuestions.slice(0, 10);
+    setQuizQuestions(selectedQuestions);
+    setQuestion(selectedQuestions[0]);
+  }, []);
+
   useEffect(() => {
     const checkScreenSize = () => {
       setIsSmallScreen(window.innerWidth < 768);
@@ -32,7 +49,7 @@ const Quiz = () => {
   }, []);
 
   const checkAnswer = (e, ans) => {
-    if (!lock) {
+    if (!lock && question) {
       if (question.ans === ans) {
         e.target.classList.add("korek");
         setScore((prev) => prev + 1);
@@ -41,55 +58,49 @@ const Quiz = () => {
         optionArray[question.ans - 1].current.classList.add("korek");
       }
       setLock(true);
-
-      if (isSmallScreen) {
-        setTimeout(() => {
-          const nextButton = document.querySelector(".quizContainer button");
-          if (nextButton) {
-            nextButton.scrollIntoView({ behavior: "smooth", block: "center" });
-          }
-        }, 500);
-      }
     }
   };
 
   const next = () => {
     if (lock) {
-      if (index === dummyQuestions.length - 1) {
+      if (index === quizQuestions.length - 1) {
         setResult(true);
         return;
       }
       setIndex(index + 1);
-      setQuestion(dummyQuestions[index + 1]);
+      setQuestion(quizQuestions[index + 1]);
       setLock(false);
       optionArray.forEach((option) => {
         option.current.classList.remove("rong");
         option.current.classList.remove("korek");
       });
-
-      if (isSmallScreen) {
-        setTimeout(() => {
-          const questionElement = document.querySelector(".quizContainer h2");
-          if (questionElement) {
-            questionElement.scrollIntoView({ behavior: "smooth", block: "start" });
-          }
-        }, 100);
-      }
     }
   };
 
   const reset = () => {
+    const shuffledQuestions = shuffleArray(RANDOM_TECH_QUESTIONS);
+    const selectedQuestions = shuffledQuestions.slice(0, 10);
+
+    setQuizQuestions(selectedQuestions);
     setIndex(0);
-    setQuestion(dummyQuestions[0]);
+    setQuestion(selectedQuestions[0]);
     setScore(0);
     setLock(false);
     setResult(false);
   };
 
+  if (!question) {
+    return (
+      <div className="min-h-screen bg-gray-100 py-8 flex items-center justify-center">
+        Loading...
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-100 py-8">
       <div className="quizContainer">
-        <h1>Quiz App</h1>
+        <h1>Programming Quiz</h1>
         <hr />
         {!result ? (
           <>
@@ -112,18 +123,18 @@ const Quiz = () => {
             </ul>
             <button onClick={next}>Next</button>
             <div className="index">
-              {index + 1} of {dummyQuestions.length} questions
+              {index + 1} of {quizQuestions.length} questions
             </div>
           </>
         ) : (
           <div className="result-container">
             <h2>
-              You Scored: {score} out of {dummyQuestions.length}
+              You Scored: {score} out of {quizQuestions.length}
             </h2>
             <p className="text-center mb-4">
-              {score === dummyQuestions.length
+              {score === quizQuestions.length
                 ? "Perfect! Amazing job!"
-                : score > dummyQuestions.length / 2
+                : score > quizQuestions.length / 2
                 ? "Good work! Keep improving!"
                 : "Keep practicing, you'll get better!"}
             </p>
