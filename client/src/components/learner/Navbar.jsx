@@ -22,6 +22,8 @@ const Navbar = () => {
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
   const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
+  
+  const hasRole = user && user.publicMetadata && user.publicMetadata.role;
 
   const purchaseAccess = async () => {
     try {
@@ -104,7 +106,7 @@ const Navbar = () => {
         </div>
 
         <div className="hidden md:flex items-center space-x-4">
-          {!userData?.isMember && user && (
+          {!userData?.isMember && user && hasRole && (
             <button
               onClick={openModal}
               className="px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg hover:from-green-600 hover:to-green-700 transition-all duration-300 shadow-sm hover:shadow-md text-sm font-medium transform hover:-translate-y-0.5"
@@ -113,7 +115,7 @@ const Navbar = () => {
             </button>
           )}
 
-          {user && (
+          {user && hasRole && (
             <button
               onClick={handleClick}
               className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all duration-300 shadow-sm hover:shadow-md text-sm font-medium flex items-center transform hover:-translate-y-0.5"
@@ -139,7 +141,7 @@ const Navbar = () => {
         </div>
 
         <div className="md:hidden flex items-center space-x-3">
-          {!userData?.isMember && user && (
+          {!userData?.isMember && user && hasRole && (
             <button
               onClick={openModal}
               className="p-1.5 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all duration-300 transform hover:scale-110"
@@ -148,7 +150,7 @@ const Navbar = () => {
             </button>
           )}
 
-          {user && (
+          {user && hasRole && (
             <button
               onClick={handleClick}
               className="p-1.5 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all duration-300 transform hover:scale-110"
