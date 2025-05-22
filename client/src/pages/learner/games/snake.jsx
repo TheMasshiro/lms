@@ -7,6 +7,7 @@ import {
   FaArrowDown,
   FaArrowLeft,
   FaArrowRight,
+  FaKeyboard,
 } from "react-icons/fa";
 
 const BOARD_WIDTH = 20;
@@ -267,8 +268,8 @@ const Snake = () => {
   };
 
   const isMobile = windowWidth < 768;
-  const buttonSize = isMobile ? "w-10 h-10" : "w-12 h-12";
-  const arrowSize = isMobile ? "h-4 w-4" : "h-5 w-5";
+  const buttonSize = isMobile ? "w-14 h-14" : "w-16 h-16";
+  const arrowSize = isMobile ? "h-6 w-6" : "h-7 w-7";
 
   return (
     <div className="text-center pt-4 pb-8 select-none max-w-full px-2">
@@ -299,6 +300,28 @@ const Snake = () => {
           ))}
         </select>
       </div>
+
+      {!isMobile && (
+        <div className="flex items-center justify-center mb-3 bg-gray-100 py-2 px-4 rounded-lg shadow-sm">
+          <FaKeyboard className="text-gray-700 mr-2" />
+          <span className="text-gray-700 font-medium">
+            Use{" "}
+            <kbd className="bg-white px-2 py-1 rounded border shadow-sm mx-1">
+              W
+            </kbd>
+            <kbd className="bg-white px-2 py-1 rounded border shadow-sm mx-1">
+              A
+            </kbd>
+            <kbd className="bg-white px-2 py-1 rounded border shadow-sm mx-1">
+              S
+            </kbd>
+            <kbd className="bg-white px-2 py-1 rounded border shadow-sm mx-1">
+              D
+            </kbd>{" "}
+            or arrow keys to control the snake
+          </span>
+        </div>
+      )}
 
       <div
         className="mx-auto relative bg-blue-100 border-2 border-gray-300 shadow-lg rounded-lg overflow-hidden"
@@ -335,6 +358,7 @@ const Snake = () => {
                 left: segment[1] * cellSize,
                 top: segment[0] * cellSize,
                 zIndex: snake.length - index,
+                borderRadius: isHead ? "30%" : "4px",
               }}
             />
           );
@@ -356,54 +380,50 @@ const Snake = () => {
         )}
       </div>
 
-      <div className="mt-4 flex flex-col items-center">
-        <button
-          className={`bg-gray-200 ${buttonSize} rounded-full mb-1 sm:mb-2 flex items-center justify-center`}
-          onClick={() => handleControlClick([-1, 0])}
-        >
-          <FaArrowUp className={arrowSize} />
-        </button>
-        <div className="flex justify-center items-center">
-          <button
-            className={`bg-gray-200 ${buttonSize} rounded-full mr-2 sm:mr-4 flex items-center justify-center`}
-            onClick={() => handleControlClick([0, -1])}
-          >
-            <FaArrowLeft className={arrowSize} />
-          </button>
-
-          <button
-            className={`px-3 py-2 rounded text-white shadow mx-1 sm:mx-2 ${
-              paused
-                ? "bg-yellow-500 hover:bg-yellow-600"
-                : "bg-gray-600 hover:bg-gray-700"
-            }`}
-            onClick={() => setPaused(!paused)}
-          >
-            {paused ? (
-              <FaPlay className={arrowSize} />
-            ) : (
-              <FaPause className={arrowSize} />
-            )}
-          </button>
-
-          <button
-            className={`bg-gray-200 ${buttonSize} rounded-full ml-2 sm:ml-4 flex items-center justify-center`}
-            onClick={() => handleControlClick([0, 1])}
-          >
-            <FaArrowRight className={arrowSize} />
-          </button>
-        </div>
-        <button
-          className={`bg-gray-200 ${buttonSize} rounded-full mt-1 sm:mt-2 flex items-center justify-center`}
-          onClick={() => handleControlClick([1, 0])}
-        >
-          <FaArrowDown className={arrowSize} />
-        </button>
-      </div>
-
       {isMobile && (
-        <div className="text-xs text-gray-600 mt-3 px-3">
-          Swipe on the game area or use the buttons above to control the snake.
+        <div className="mt-6 flex flex-col items-center">
+          <button
+            className={`bg-gray-200 ${buttonSize} rounded-full mb-2 sm:mb-3 flex items-center justify-center shadow-md active:bg-gray-300`}
+            onClick={() => handleControlClick([-1, 0])}
+          >
+            <FaArrowUp className={arrowSize} />
+          </button>
+          <div className="flex justify-center items-center">
+            <button
+              className={`bg-gray-200 ${buttonSize} rounded-full mr-3 sm:mr-6 flex items-center justify-center shadow-md active:bg-gray-300`}
+              onClick={() => handleControlClick([0, -1])}
+            >
+              <FaArrowLeft className={arrowSize} />
+            </button>
+
+            <button
+              className={`p-4 rounded-full text-white shadow mx-2 sm:mx-3 ${
+                paused
+                  ? "bg-yellow-500 hover:bg-yellow-600"
+                  : "bg-gray-600 hover:bg-gray-700"
+              }`}
+              onClick={() => setPaused(!paused)}
+            >
+              {paused ? (
+                <FaPlay className={arrowSize} />
+              ) : (
+                <FaPause className={arrowSize} />
+              )}
+            </button>
+
+            <button
+              className={`bg-gray-200 ${buttonSize} rounded-full ml-3 sm:ml-6 flex items-center justify-center shadow-md active:bg-gray-300`}
+              onClick={() => handleControlClick([0, 1])}
+            >
+              <FaArrowRight className={arrowSize} />
+            </button>
+          </div>
+          <button
+            className={`bg-gray-200 ${buttonSize} rounded-full mt-2 sm:mt-3 flex items-center justify-center shadow-md active:bg-gray-300`}
+            onClick={() => handleControlClick([1, 0])}
+          >
+            <FaArrowDown className={arrowSize} />
+          </button>
         </div>
       )}
     </div>
