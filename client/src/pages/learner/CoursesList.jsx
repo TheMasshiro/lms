@@ -5,6 +5,7 @@ import { useParams } from "react-router-dom";
 import SearchBar from "../../components/learner/SearchBar";
 import { IoMdClose } from "react-icons/io";
 import { AiOutlinePlus } from "react-icons/ai";
+import { FaBookOpen, FaSearch } from "react-icons/fa";
 
 const CoursesList = () => {
   const { input } = useParams();
@@ -13,8 +14,8 @@ const CoursesList = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (allCourses && allCourses.length > 0) {
-      const tempCourses = allCourses.slice();
+    if (allCourses) {
+      const tempCourses = allCourses ? allCourses.slice() : [];
       input
         ? setFilteredCourse(
             tempCourses.filter((item) =>
@@ -62,7 +63,7 @@ const CoursesList = () => {
             <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-blue-500 border-t-transparent"></div>
             <p className="mt-4 text-gray-600">Loading courses...</p>
           </div>
-        ) : filteredCourse.length > 0 ? (
+        ) : filteredCourse && filteredCourse.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {filteredCourse.map((course, index) => (
               <div
@@ -74,23 +75,50 @@ const CoursesList = () => {
             ))}
           </div>
         ) : (
-          <div className="text-center py-12 bg-white rounded-xl shadow-md">
-            <div className="p-6">
-              <AiOutlinePlus className="h-16 w-16 mx-auto text-gray-400 mb-4" />
-              <h3 className="text-xl font-semibold text-gray-800 mb-2">
-                No courses found
-              </h3>
-              <p className="text-gray-600 mb-6">
-                {input
-                  ? `No courses match your search for "${input}"`
-                  : "There are no courses available at the moment."}
-              </p>
-              <button
-                onClick={() => navigate("/student/courses/")}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                Browse All Courses
-              </button>
+          <div className="text-center py-16 bg-white rounded-xl shadow-md">
+            <div className="max-w-md mx-auto p-6">
+              {input ? (
+                <>
+                  <div className="bg-gray-100 p-5 rounded-full inline-block mb-5">
+                    <FaSearch className="h-10 w-10 text-gray-400" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-gray-800 mb-3">
+                    No results found
+                  </h3>
+                  <p className="text-gray-600 mb-8">
+                    We couldn't find any courses matching "{input}". Try using
+                    different keywords or browse all available courses.
+                  </p>
+                  <button
+                    onClick={() => navigate("/student/courses/")}
+                    className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                  >
+                    Browse All Courses
+                  </button>
+                </>
+              ) : (
+                <>
+                  <div className="bg-blue-50 p-5 rounded-full inline-block mb-5">
+                    <FaBookOpen className="h-10 w-10 text-blue-400" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-gray-800 mb-3">
+                    No Courses Available
+                  </h3>
+                  <p className="text-gray-600 mb-3">
+                    There are currently no courses available in our catalog.
+                  </p>
+                  <p className="text-gray-500 mb-8">
+                    Please check back later as our educators are working on
+                    creating new learning opportunities for you.
+                  </p>
+                  <button
+                    onClick={() => navigate("/")}
+                    className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                  >
+                    Return to Homepage
+                  </button>
+                </>
+              )}
             </div>
           </div>
         )}
