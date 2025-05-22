@@ -10,9 +10,13 @@ import {
   FaKeyboard,
 } from "react-icons/fa";
 
-const BOARD_WIDTH = 20;
-const BOARD_HEIGHT = 15;
-const INITIAL_SNAKE = [[7, 10], [7, 9], [7, 8]];
+const BOARD_WIDTH = 25;
+const BOARD_HEIGHT = 20;
+const INITIAL_SNAKE = [
+  [Math.floor(BOARD_HEIGHT / 2), Math.floor(BOARD_WIDTH / 3)],
+  [Math.floor(BOARD_HEIGHT / 2), Math.floor(BOARD_WIDTH / 3) - 1],
+  [Math.floor(BOARD_HEIGHT / 2), Math.floor(BOARD_WIDTH / 3) - 2],
+];
 const INITIAL_DIRECTION = [0, 1];
 const EDGE_BUFFER = 1;
 const SPEEDS = {
@@ -37,6 +41,7 @@ const Snake = () => {
   const lastUpdateTimeRef = useRef(0);
   const [cellSize, setCellSize] = useState(25);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  const gameAreaRef = useRef(null);
 
   function generateFood(snakeBody) {
     let newFood;
@@ -71,28 +76,31 @@ const Snake = () => {
       setCellSize(Math.min(16, Math.floor((windowWidth - 40) / BOARD_WIDTH)));
     } else if (windowWidth < 768) {
       setCellSize(Math.min(20, Math.floor((windowWidth - 60) / BOARD_WIDTH)));
+    } else if (windowWidth < 1200) {
+      setCellSize(22);
     } else {
-      setCellSize(25);
+      setCellSize(26);
     }
   }, [windowWidth]);
 
-  const handleKey = (e) => {
+  const handleKeyDown = (e) => {
+    e.preventDefault();
     const { key } = e;
     if (key === " ") {
       setPaused((prev) => !prev);
       return;
     }
 
-    const newDir = {
-      ArrowUp: [-1, 0],
-      ArrowDown: [1, 0],
-      ArrowLeft: [0, -1],
-      ArrowRight: [0, 1],
-      w: [-1, 0],
-      s: [1, 0],
-      a: [0, -1],
-      d: [0, 1],
-    }[key.toLowerCase()];
+    let newDir;
+    if (key === "ArrowUp" || key.toLowerCase() === "w") {
+      newDir = [-1, 0];
+    } else if (key === "ArrowDown" || key.toLowerCase() === "s") {
+      newDir = [1, 0];
+    } else if (key === "ArrowLeft" || key.toLowerCase() === "a") {
+      newDir = [0, -1];
+    } else if (key === "ArrowRight" || key.toLowerCase() === "d") {
+      newDir = [0, 1];
+    }
 
     if (newDir) {
       if (
@@ -164,9 +172,56 @@ const Snake = () => {
   };
 
   useEffect(() => {
-    window.addEventListener("keydown", handleKey);
-    return () => window.removeEventListener("keydown", handleKey);
-  }, [snake, paused]);
+    const handleKeyDown = (e) => {
+      if (
+        [
+          "ArrowUp",
+          "ArrowDown",
+          "ArrowLeft",
+          "ArrowRight",
+          "w",
+          "a",
+          "s",
+          "d",
+          " ",
+        ].includes(e.key.toLowerCase())
+      ) {
+        e.preventDefault();
+      }
+
+      const { key } = e;
+      if (key === " ") {
+        setPaused((prev) => !prev);
+        return;
+      }
+
+      let newDir;
+      if (key === "ArrowUp" || key.toLowerCase() === "w") {
+        newDir = [-1, 0];
+      } else if (key === "ArrowDown" || key.toLowerCase() === "s") {
+        newDir = [1, 0];
+      } else if (key === "ArrowLeft" || key.toLowerCase() === "a") {
+        newDir = [0, -1];
+      } else if (key === "ArrowRight" || key.toLowerCase() === "d") {
+        newDir = [0, 1];
+      }
+
+      if (newDir) {
+        if (
+          snake.length <= 1 ||
+          !(
+            snake[0][0] + newDir[0] === snake[1][0] &&
+            snake[0][1] + newDir[1] === snake[1][1]
+          )
+        ) {
+          setNextDirection(newDir);
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [snake]);
 
   const updateGame = (timestamp) => {
     if (gameOver || paused) {
@@ -244,6 +299,12 @@ const Snake = () => {
     nextDirection,
   ]);
 
+  useEffect(() => {
+    if (gameAreaRef.current) {
+      gameAreaRef.current.focus();
+    }
+  }, []);
+
   const resetGame = () => {
     setSnake(INITIAL_SNAKE);
     setDirection(INITIAL_DIRECTION);
@@ -253,6 +314,10 @@ const Snake = () => {
     setGameOver(false);
     setPaused(false);
     lastUpdateTimeRef.current = 0;
+
+    if (gameAreaRef.current) {
+      gameAreaRef.current.focus();
+    }
   };
 
   const handleControlClick = (newDir) => {
@@ -264,6 +329,10 @@ const Snake = () => {
       )
     ) {
       setNextDirection(newDir);
+    }
+
+    if (gameAreaRef.current) {
+      gameAreaRef.current.focus();
     }
   };
 
@@ -290,7 +359,10 @@ const Snake = () => {
         <select
           className="border px-2 py-1 rounded bg-white text-sm"
           value={difficulty}
-          onChange={(e) => setDifficulty(e.target.value)}
+          onChange={(e) => {
+            setDifficulty(e.target.value);
+            if (gameAreaRef.current) gameAreaRef.current.focus();
+          }}
           disabled={!gameOver && score > 0}
         >
           {Object.keys(SPEEDS).map((level) => (
@@ -324,12 +396,15 @@ const Snake = () => {
       )}
 
       <div
-        className="mx-auto relative bg-blue-100 border-2 border-gray-300 shadow-lg rounded-lg overflow-hidden"
+        ref={gameAreaRef}
+        tabIndex={0}
+        className="mx-auto relative bg-blue-100 border-2 border-gray-300 shadow-lg rounded-lg overflow-hidden focus:outline-none focus:ring-2 focus:ring-blue-400"
         style={{
           width: BOARD_WIDTH * cellSize,
           height: BOARD_HEIGHT * cellSize,
           maxWidth: "100%",
         }}
+        onKeyDown={handleKeyDown}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
@@ -402,7 +477,10 @@ const Snake = () => {
                   ? "bg-yellow-500 hover:bg-yellow-600"
                   : "bg-gray-600 hover:bg-gray-700"
               }`}
-              onClick={() => setPaused(!paused)}
+              onClick={() => {
+                setPaused(!paused);
+                if (gameAreaRef.current) gameAreaRef.current.focus();
+              }}
             >
               {paused ? (
                 <FaPlay className={arrowSize} />
