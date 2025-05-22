@@ -1,146 +1,284 @@
 .game-container {
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 20px;
   text-align: center;
-  padding: 40px 20px;
-  font-family: Georgia, "Times New Roman", Times, serif; /* Similar font to the site */
-  color: #333;
+  background-color: #f8f9fa;
+  border-radius: 12px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
 
-.game-container h2 {
-  font-size: 2.5rem;
-  margin-bottom: 20px;
-  color: #333; /* Darker heading color */
+.game-title {
+  font-size: 2rem;
+  margin-bottom: 15px;
+  color: #2c3e50;
+  font-weight: 700;
 }
 
-.game-container p {
-  font-size: 1.2rem;
-  margin-bottom: 20px;
-  color: #666; /* Slightly lighter text color */
-}
-
-.game-container .board {
+.board {
   display: grid;
-  grid-template-columns: repeat(3, 100px); /* Keeps the board square */
-  gap: 10px;
-  justify-content: center;
-  margin: 0 auto 20px auto;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin: 20px 0;
+  background-color: #34495e;
+  padding: 8px;
+  border-radius: 8px;
 }
 
-.game-container .cell {
-  width: 100px;
-  height: 100px;
-  font-size: 2.5rem;
+.cell {
+  aspect-ratio: 1/1;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #fff; /* White background for clean look */
-  border: 3px solid #ddd; /* Light border */
+  background-color: #ecf0f1;
+  border-radius: 5px;
   cursor: pointer;
-  transition: background-color 0.2s ease;
-  border-radius: 10px; /* Rounded corners */
+  transition: all 0.2s ease;
+  font-size: 2rem;
 }
 
-.game-container .cell:hover {
-  background-color: #f0f0f0; /* Subtle hover effect */
+.cell:hover {
+  background-color: #d5dbdb;
+  transform: scale(1.02);
 }
 
-.game-container .button-group {
-  display: flex;
-  justify-content: center;
-  gap: 24px;
-  margin-top: 20px;
-  flex-wrap: wrap;
+.winning-cell {
+  animation: pulse 1.5s infinite;
 }
 
-@media (max-width: 500px) {
-  .game-container .button-group {
-    flex-direction: column;
-    align-items: center;
-    gap: 12px;
-  }
-
-  .game-container .board {
-    grid-template-columns: repeat(
-      3,
-      80px
-    ); /* Adjusts board size on small screens */
-    gap: 8px;
-  }
-
-  .game-container .cell {
-    width: 80px;
-    height: 80px;
-    font-size: 2rem;
-  }
-
-  .game-container button {
-    width: 80%;
-    max-width: 250px;
-  }
+.x-icon {
+  color: #e74c3c;
+  font-size: 2rem;
 }
 
-.game-container button {
-  padding: 12px 24px;
+.o-icon {
+  color: #3498db;
+  font-size: 1.8rem;
+}
+
+.icon-sm {
   font-size: 1.2rem;
-  background-color: #00e1ff07;
-  color: rgb(0, 0, 0);
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
+  vertical-align: middle;
 }
 
-.game-container button:hover {
-  background-color: #00e1ff;
+.icon-md {
+  font-size: 1.8rem;
+  vertical-align: middle;
+}
+
+.icon-lg {
+  font-size: 2.5rem;
+  margin-right: 10px;
+}
+
+.trophy-icon {
+  color: #f1c40f;
+  margin: 0 10px;
+}
+
+.status-message {
+  height: 30px;
+  margin: 10px 0;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.turn-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.winner-message {
+  font-weight: bold;
+  color: #27ae60;
+}
+
+.button-group {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.game-btn {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.reset-btn {
+  background-color: #3498db;
+  color: white;
+}
+
+.reset-btn:hover {
+  background-color: #2980b9;
+}
+
+.mode-btn {
+  background-color: #2ecc71;
+  color: white;
+}
+
+.mode-btn:hover {
+  background-color: #27ae60;
+}
+
+.score-reset-btn {
+  background-color: #e74c3c;
+  color: white;
+}
+
+.score-reset-btn:hover {
+  background-color: #c0392b;
+}
+
+.score-board {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin: 15px 0;
+}
+
+.score {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px;
+  border-radius: 8px;
+  font-size: 1.2rem;
+  font-weight: 600;
+  gap: 5px;
+}
+
+.x-score {
+  color: #e74c3c;
+  background-color: rgba(231, 76, 60, 0.1);
+}
+
+.o-score {
+  color: #3498db;
+  background-color: rgba(52, 152, 219, 0.1);
+}
+
+.draws {
+  color: #7f8c8d;
+  background-color: rgba(127, 140, 141, 0.1);
 }
 
 .popup {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background-color: rgba(0, 0, 0, 0.8);
-  color: white;
-  padding: 25px;
-  border-radius: 10px;
-  text-align: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
   z-index: 10;
-  opacity: 0;
-  animation: popupFadeIn 0.5s forwards, popupScaleIn 0.4s ease-out forwards;
 }
 
-@keyframes popupFadeIn {
+.popup-content {
+  background-color: white;
+  padding: 30px;
+  border-radius: 12px;
+  text-align: center;
+  animation: popup 0.3s ease-out;
+  max-width: 90%;
+  width: 350px;
+}
+
+.winner-announcement {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  font-size: 1.5rem;
+  color: #2c3e50;
+}
+
+.draw-announcement {
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+  color: #7f8c8d;
+}
+
+.restart-btn {
+  padding: 12px 25px;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.restart-btn:hover {
+  background-color: #2980b9;
+  transform: translateY(-2px);
+}
+
+@keyframes popup {
   0% {
+    transform: scale(0.5);
     opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
   }
   100% {
     opacity: 1;
   }
 }
 
-@keyframes popupScaleIn {
-  0% {
-    transform: translate(-50%, -50%) scale(0.8);
+@media (max-width: 480px) {
+  .game-container {
+    padding: 15px 10px;
   }
-  100% {
-    transform: translate(-50%, -50%) scale(1);
+  
+  .game-title {
+    font-size: 1.7rem;
   }
-}
-
-.popup h3 {
-  font-size: 1.5rem;
-  margin-bottom: 20px;
-}
-
-.popup button {
-  background-color: #00e1ff;
-  color: white;
-  padding: 10px 20px;
-  border: none;
-  cursor: pointer;
-  border-radius: 5px;
-  transition: background-color 0.2s ease;
-}
-
-.popup button:hover {
-  background-color: #0056b3;
+  
+  .board {
+    gap: 5px;
+    padding: 5px;
+  }
+  
+  .cell {
+    font-size: 1.5rem;
+  }
+  
+  .x-icon, .o-icon {
+    font-size: 1.5rem;
+  }
+  
+  .game-btn {
+    padding: 8px 12px;
+    font-size: 0.9rem;
+  }
+  
+  .score {
+    font-size: 1rem;
+    padding: 5px;
+  }
 }

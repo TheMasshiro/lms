@@ -8,7 +8,7 @@ import { TbTicTac } from "react-icons/tb";
 
 const gameList = [
     {
-        title: "Quiz",
+        title: "Programming Quiz",
         icon: <FaQuestionCircle className="h-8 w-8 text-cyan-300" />,
         cardDescription:
             "Test your memory with quick trivia! Fun, challenging, and brain-boosting.",
