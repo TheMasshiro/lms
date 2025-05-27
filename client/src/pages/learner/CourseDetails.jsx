@@ -6,7 +6,16 @@ import humanizeDuration from "humanize-duration";
 import axios from "axios";
 import Loading from "../../components/learner/Loading";
 import { AppContext } from "../../context/AppContext";
-import { FaStar, FaRegStar, FaChevronDown, FaLock, FaCheck, FaPlay, FaClock, FaBook } from "react-icons/fa";
+import {
+  FaStar,
+  FaRegStar,
+  FaChevronDown,
+  FaLock,
+  FaCheck,
+  FaPlay,
+  FaClock,
+  FaBook,
+} from "react-icons/fa";
 
 const CourseDetails = () => {
   const { id } = useParams();
@@ -96,13 +105,17 @@ const CourseDetails = () => {
           <div className="flex flex-wrap items-center mt-2 text-sm text-gray-600 gap-4">
             <span>Educator: {courseData.educator.name}</span>
             <div className="flex items-center">
-              <span className="mr-2">Rating: {calculateRating(courseData)}</span>
+              <span className="mr-2">
+                Rating: {calculateRating(courseData)}
+              </span>
               <div className="flex items-center">
-                {[...Array(5)].map((_, i) => (
-                  i < Math.floor(calculateRating(courseData)) 
-                    ? <FaStar key={i} className="w-3.5 h-3.5 text-yellow-500" />
-                    : <FaRegStar key={i} className="w-3.5 h-3.5 text-gray-300" />
-                ))}
+                {[...Array(5)].map((_, i) =>
+                  i < Math.floor(calculateRating(courseData)) ? (
+                    <FaStar key={i} className="w-3.5 h-3.5 text-yellow-500" />
+                  ) : (
+                    <FaRegStar key={i} className="w-3.5 h-3.5 text-gray-300" />
+                  )
+                )}
               </div>
             </div>
             <span>
@@ -128,9 +141,9 @@ const CourseDetails = () => {
                 />
               ) : (
                 <div className="aspect-video relative overflow-hidden">
-                  <img 
-                    src={courseData.courseThumbnail} 
-                    alt={courseData.courseTitle} 
+                  <img
+                    src={courseData.courseThumbnail}
+                    alt={courseData.courseTitle}
                     className="w-full object-cover"
                   />
                   <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
@@ -145,12 +158,16 @@ const CourseDetails = () => {
             {/* Course Description Section */}
             <div className="bg-white rounded-lg shadow-md overflow-hidden mb-6">
               <div className="p-5 border-b border-gray-100">
-                <h2 className="text-xl font-semibold text-gray-800">Course Description</h2>
+                <h2 className="text-xl font-semibold text-gray-800">
+                  Course Description
+                </h2>
               </div>
               <div className="p-5">
-                <div 
+                <div
                   className="rich-text text-gray-700"
-                  dangerouslySetInnerHTML={{ __html: courseData.courseDescription }}
+                  dangerouslySetInnerHTML={{
+                    __html: courseData.courseDescription,
+                  }}
                 ></div>
               </div>
             </div>
@@ -163,7 +180,10 @@ const CourseDetails = () => {
               <div className="p-5 border-b border-gray-100">
                 <div className="flex gap-3 items-center pt-2">
                   <p className="text-gray-800 text-2xl md:text-3xl font-semibold">
-                    Course Code: <span className="text-blue-600">{courseData.courseCode}</span>
+                    Course Code:{" "}
+                    <span className="text-blue-600">
+                      {courseData.courseCode}
+                    </span>
                   </p>
                 </div>
               </div>
@@ -183,9 +203,11 @@ const CourseDetails = () => {
                     <p>{calculateNoOfLectures(courseData)} lessons</p>
                   </div>
                 </div>
-                
+
                 <div className="mt-6">
-                  <p className="font-medium text-gray-800 mb-2">What's included:</p>
+                  <p className="font-medium text-gray-800 mb-2">
+                    What's included:
+                  </p>
                   <ul className="ml-5 list-disc text-gray-600 space-y-1 text-sm">
                     <li>Lifetime access with free updates</li>
                     <li>Step-by-step, hands-on project guidance</li>
@@ -195,7 +217,7 @@ const CourseDetails = () => {
                   </ul>
                 </div>
 
-                <div 
+                <div
                   className={`w-full mt-6 py-3 rounded-md font-medium text-center ${
                     isAlreadyEnrolled
                       ? "bg-green-100 text-green-700"
@@ -222,12 +244,16 @@ const CourseDetails = () => {
             {/* Course Content Section */}
             <div className="bg-white rounded-lg shadow-md overflow-hidden">
               <div className="p-4 bg-gray-50 border-b">
-                <h2 className="text-lg font-semibold text-gray-800">Course Content</h2>
+                <h2 className="text-lg font-semibold text-gray-800">
+                  Course Content
+                </h2>
                 <p className="text-sm text-gray-500 mt-1">
-                  {courseData.courseContent.length} sections • {calculateNoOfLectures(courseData)} lectures • {calculateCourseDuration(courseData)} total
+                  {courseData.courseContent.length} sections •{" "}
+                  {calculateNoOfLectures(courseData)} lectures •{" "}
+                  {calculateCourseDuration(courseData)} total
                 </p>
               </div>
-              
+
               <div className="max-h-[600px] overflow-y-auto">
                 {courseData.courseContent.map((chapter, index) => (
                   <div
@@ -240,27 +266,33 @@ const CourseDetails = () => {
                     >
                       <div className="flex items-center gap-3">
                         <div className="w-6 h-6 flex items-center justify-center rounded-full bg-gray-100">
-                          <FaChevronDown 
+                          <FaChevronDown
                             className={`h-3 w-3 text-gray-600 transform transition-transform ${
                               openSections[index] ? "rotate-180" : ""
                             }`}
                           />
                         </div>
-                        <h3 className="font-medium text-gray-800">{chapter.chapterTitle}</h3>
+                        <h3 className="font-medium text-gray-800">
+                          {chapter.chapterTitle}
+                        </h3>
                       </div>
                       <div className="text-sm text-gray-500">
-                        {chapter.chapterContent.length} lectures • {calculateChapterTime(chapter)}
+                        {chapter.chapterContent.length} lecture
+                        {chapter.chapterContent.length !== 1 ? "s" : ""} •{" "}
+                        {calculateChapterTime(chapter) || "Files Only"}
                       </div>
                     </div>
 
                     <div
                       className={`bg-gray-50 overflow-hidden transition-all duration-300 ${
-                        openSections[index] ? "max-h-[1000px] py-2" : "max-h-0 py-0"
+                        openSections[index]
+                          ? "max-h-[1000px] py-2"
+                          : "max-h-0 py-0"
                       }`}
                     >
                       {chapter.chapterContent.map((lecture, i) => (
-                        <div 
-                          key={i} 
+                        <div
+                          key={i}
                           className="flex items-center px-4 py-3 hover:bg-gray-100 transition"
                         >
                           <div className="mr-3">
@@ -269,14 +301,18 @@ const CourseDetails = () => {
                             </div>
                           </div>
                           <div className="flex-1">
-                            <p className="text-sm text-gray-800">{lecture.lectureTitle}</p>
+                            <p className="text-sm text-gray-800">
+                              {lecture.lectureTitle}
+                            </p>
                           </div>
                           <div className="flex items-center gap-3 ml-2">
                             {lecture.isPreviewFree && (
                               <button
                                 onClick={() =>
                                   setPlayerData({
-                                    videoId: lecture.lectureUrl.split("/").pop(),
+                                    videoId: lecture.lectureUrl
+                                      .split("/")
+                                      .pop(),
                                   })
                                 }
                                 className="text-sm text-blue-600 hover:text-blue-800"
@@ -285,10 +321,13 @@ const CourseDetails = () => {
                               </button>
                             )}
                             <span className="text-xs text-gray-500">
-                              {humanizeDuration(lecture.lectureDuration * 60 * 1000, {
-                                units: ["h", "m"],
-                                round: true
-                              })}
+                              {humanizeDuration(
+                                lecture.lectureDuration * 60 * 1000,
+                                {
+                                  units: ["h", "m"],
+                                  round: true,
+                                }
+                              )}
                             </span>
                           </div>
                         </div>
