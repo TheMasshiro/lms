@@ -16,7 +16,7 @@ const ActionButtons = (props) => {
   };
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-white border-t shadow-md z-10">
+    <div className="fixed bottom-0 left-20 right-20 bg-white border-t rounded-md shadow-md z-10">
       <div className="max-w-4xl mx-auto p-4">
         <div className="flex justify-between gap-4">
           {props.currentStep > 1 && (
