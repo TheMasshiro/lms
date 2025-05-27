@@ -10,7 +10,7 @@ const RequireRole = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const location = useLocation();
 
-  const hasRole = isEducator || isStudent;
+  const hasRole = user?.publicMetadata?.role || isEducator || isStudent;
 
   useEffect(() => {
     if (isLoaded) {
