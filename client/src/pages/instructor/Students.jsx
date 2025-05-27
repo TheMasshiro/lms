@@ -24,7 +24,6 @@ const StudentManagement = () => {
   const [showRemoveModal, setShowRemoveModal] = useState(false);
   const [myStudents, setMyStudents] = useState([]);
 
-  // Fetch educator's courses
   const fetchEducatorCourses = async () => {
     try {
       setIsLoading(true);
@@ -43,7 +42,6 @@ const StudentManagement = () => {
     }
   };
 
-  // Fetch all students enrolled in the educator's courses
   const fetchAllStudents = async () => {
     try {
       setIsLoading(true);
@@ -64,7 +62,6 @@ const StudentManagement = () => {
     }
   };
 
-  // fetch educator's students with proper useCallback
   const fetchMyStudents = async () => {
     try {
       setIsLoading(true);
@@ -109,7 +106,6 @@ const StudentManagement = () => {
     return matchesSearch && matchesCourse;
   });
 
-  // Handle student selection toggle with enrollment count tracking
   const toggleStudentSelection = (id, checked) => {
     setSelectedStudents((prev) => {
       const updatedSelected = checked
@@ -156,7 +152,11 @@ const StudentManagement = () => {
     }
   };
 
-  // Toggle select all students with enrollment count tracking
+  const handleMobileStudentToggle = (student) => {
+    const isSelected = selectedStudents.includes(student.id);
+    toggleStudentSelection(student.id, !isSelected);
+  };
+
   const toggleSelectAll = () => {
     if (selectedStudents.length === filteredMyStudents.length) {
       setSelectedStudents([]);
@@ -183,13 +183,11 @@ const StudentManagement = () => {
     }
   };
 
-  // Handle clear filters functionality
   const handleClearFilters = () => {
     setSearchTerm("");
     setFilterCourse("");
   };
 
-  // Handle add educator students
   const handleAddStudents = async (addedStudents) => {
     try {
       if (addedStudents.length === 0) {
@@ -230,7 +228,6 @@ const StudentManagement = () => {
     }
   };
 
-  // Handle remove educator students
   const handleRemoveStudents = async (removedStudents) => {
     try {
       if (removedStudents.length === 0) {
@@ -271,7 +268,6 @@ const StudentManagement = () => {
     }
   };
 
-  // Updated function to handle enrollment count updates
   const addEnrollmentsCount = async (enrolledStudents) => {
     try {
       const token = await getToken();
@@ -291,7 +287,6 @@ const StudentManagement = () => {
     }
   };
 
-  // Handle bulk enrollment - updated with proper enrollment count handling
   const handleBatchEnrollCourse = async () => {
     try {
       if (!selectedCourseCode) {
@@ -302,7 +297,6 @@ const StudentManagement = () => {
         return toast.error("Please select at least one student.");
       }
 
-      // Validate all students before enrolling
       for (let i = 0; i < selectedStudents.length; i++) {
         const studentId = selectedStudents[i];
         const enrollmentCount = selectedStudentsCount[studentId];
@@ -372,40 +366,41 @@ const StudentManagement = () => {
   if (!isEducator || isLoading) {
     return <Loading />;
   }
+
   return (
-    <div className="bg-blue-50 min-h-screen p-6 sm:p-8">
+    <div className="bg-blue-50 min-h-screen p-4 sm:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto">
-        <div className="bg-white rounded-xl shadow-md p-6 mb-8">
-          <div className="flex flex-col md:flex-row md:items-center justify-between">
+        <div className="bg-white rounded-lg sm:rounded-xl shadow-md p-4 sm:p-6 mb-6 sm:mb-8">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between">
             <div className="flex-grow">
-              <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-2">
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-800 mb-2">
                 Student Management
               </h1>
-              <p className="text-gray-600">
+              <p className="text-sm sm:text-base text-gray-600">
                 Manage students and their course enrollments
               </p>
             </div>
-            <div className="flex flex-col md:flex-row gap-4 mt-4 md:mt-0">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mt-4 lg:mt-0">
               <button
                 onClick={() => setShowAddModal(true)}
-                className="w-full md:w-auto px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition flex items-center justify-center gap-2"
+                className="w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition flex items-center justify-center gap-2 text-sm sm:text-base"
               >
-                <FaPlus className="h-5 w-5" />
+                <FaPlus className="h-4 w-4 sm:h-5 sm:w-5" />
                 Add Students
               </button>
               <button
                 onClick={() => setShowRemoveModal(true)}
-                className="w-full md:w-auto px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition flex items-center justify-center gap-2"
+                className="w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition flex items-center justify-center gap-2 text-sm sm:text-base"
               >
-                <FaTrash className="h-5 w-5" />
+                <FaTrash className="h-4 w-4 sm:h-5 sm:w-5" />
                 Remove Students
               </button>
             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-xl shadow-md p-6 mb-6">
-          <div className="flex flex-col md:flex-row gap-4">
+        <div className="bg-white rounded-lg sm:rounded-xl shadow-md p-4 sm:p-6 mb-6">
+          <div className="flex flex-col lg:flex-row gap-4">
             <div className="flex-grow">
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Search Students
@@ -414,18 +409,18 @@ const StudentManagement = () => {
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                className="w-full p-3 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-sm"
                 placeholder="Search by name or email"
               />
             </div>
-            <div className="md:w-1/3">
+            <div className="lg:w-1/3">
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Filter by Course
               </label>
               <select
                 value={filterCourse}
                 onChange={(e) => setFilterCourse(e.target.value)}
-                className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                className="w-full p-3 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-sm"
               >
                 <option value="">All Courses</option>
                 {courses.map((course) => (
@@ -439,16 +434,16 @@ const StudentManagement = () => {
         </div>
 
         {selectedStudents.length > 0 && (
-          <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6 flex flex-col md:flex-row items-center justify-between gap-4">
-            <div className="text-blue-800">
+          <div className="bg-blue-50 border border-blue-200 rounded-lg sm:rounded-xl p-4 mb-6 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
+            <div className="text-blue-800 text-sm sm:text-base">
               <span className="font-medium">{selectedStudents.length}</span>{" "}
               students selected
             </div>
-            <div className="flex flex-col md:flex-row gap-3 w-full md:w-auto">
+            <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
               <select
                 value={selectedCourseCode}
                 onChange={(e) => setSelectedCourseCode(e.target.value)}
-                className="p-2 border border-gray-300 rounded-md w-full md:w-auto"
+                className="p-2 sm:p-3 border border-gray-300 rounded-md w-full sm:w-auto text-sm"
               >
                 <option value="">Select a course to enroll</option>
                 {courses.map((course) => (
@@ -460,9 +455,9 @@ const StudentManagement = () => {
               <button
                 onClick={handleBatchEnrollCourse}
                 disabled={!selectedCourseCode}
-                className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors disabled:bg-green-300 flex items-center justify-center gap-2"
+                className="px-4 py-2 sm:py-3 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors disabled:bg-green-300 flex items-center justify-center gap-2 text-sm sm:text-base"
               >
-                <FaUserPlus className="h-5 w-5" />
+                <FaUserPlus className="h-4 w-4 sm:h-5 sm:w-5" />
                 Enroll
               </button>
             </div>
@@ -470,44 +465,106 @@ const StudentManagement = () => {
         )}
 
         {myStudents.length === 0 ? (
-          <div className="text-center py-12 bg-white rounded-xl shadow-md">
-            <div className="p-6">
-              <HiPlus className="h-16 w-16 mx-auto text-gray-400 mb-4" />
-              <h3 className="text-xl font-semibold text-gray-800 mb-2">
+          <div className="text-center py-8 sm:py-12 bg-white rounded-lg sm:rounded-xl shadow-md">
+            <div className="p-4 sm:p-6">
+              <HiPlus className="h-12 w-12 sm:h-16 sm:w-16 mx-auto text-gray-400 mb-4" />
+              <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-2">
                 No Students Yet
               </h3>
-              <p className="text-gray-600 mb-6">
+              <p className="text-sm sm:text-base text-gray-600 mb-6">
                 You don't have any students enrolled in your courses yet.
               </p>
               <button
                 onClick={() => setShowAddModal(true)}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm sm:text-base"
               >
                 Add Your First Student
               </button>
             </div>
           </div>
         ) : filteredMyStudents.length === 0 ? (
-          <div className="text-center py-12 bg-white rounded-xl shadow-md">
-            <div className="p-6">
-              <FaExclamationTriangle className="h-16 w-16 mx-auto text-gray-400 mb-4" />
-              <h3 className="text-xl font-semibold text-gray-800 mb-2">
+          <div className="text-center py-8 sm:py-12 bg-white rounded-lg sm:rounded-xl shadow-md">
+            <div className="p-4 sm:p-6">
+              <FaExclamationTriangle className="h-12 w-12 sm:h-16 sm:w-16 mx-auto text-gray-400 mb-4" />
+              <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-2">
                 No Students Found
               </h3>
-              <p className="text-gray-600 mb-6">
+              <p className="text-sm sm:text-base text-gray-600 mb-6">
                 No students match your current search or course filter.
               </p>
               <button
                 onClick={handleClearFilters}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm sm:text-base"
               >
                 Clear Filters
               </button>
             </div>
           </div>
         ) : (
-          <div className="bg-white rounded-xl shadow-md overflow-hidden">
-            <div className="overflow-x-auto">
+          <div className="bg-white rounded-lg sm:rounded-xl shadow-md overflow-hidden">
+            <div className="block md:hidden">
+              <div className="divide-y divide-gray-200">
+                {filteredMyStudents.map((student) => (
+                  <div 
+                    key={student.id} 
+                    className={`p-4 cursor-pointer transition-colors ${
+                      selectedStudents.includes(student.id) 
+                        ? 'bg-blue-50 border-l-4 border-blue-500' 
+                        : 'hover:bg-gray-50'
+                    }`}
+                    onClick={() => handleMobileStudentToggle(student)}
+                  >
+                    <div className="flex items-start space-x-3">
+                      <input
+                        type="checkbox"
+                        checked={selectedStudents.includes(student.id)}
+                        onChange={(e) => {
+                          e.stopPropagation();
+                          toggleStudentSelection(student.id, e.target.checked);
+                        }}
+                        className="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded flex-shrink-0"
+                      />
+                      <img
+                        className="h-12 w-12 rounded-full object-cover flex-shrink-0"
+                        src={student.imageUrl}
+                        alt={student.name}
+                      />
+                      <div className="flex-1 min-w-0">
+                        <div className="flex justify-between items-start mb-2">
+                          <div className="min-w-0 flex-1">
+                            <p className="text-sm font-medium text-gray-900 truncate">
+                              {student.name}
+                            </p>
+                            <p className="text-xs text-gray-500 truncate">
+                              {student.email}
+                            </p>
+                          </div>
+                          <div className="flex flex-col items-end space-y-1 ml-2">
+                            {student.isMember ? (
+                              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                Member
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                Non-Member
+                              </span>
+                            )}
+                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                              Active
+                            </span>
+                          </div>
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          {student.enrolledCourses.length} courses enrolled
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="hidden md:block overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
@@ -610,8 +667,9 @@ const StudentManagement = () => {
                 </tbody>
               </table>
             </div>
-            <div className="bg-gray-50 px-6 py-3 flex items-center justify-between">
-              <div className="text-sm text-gray-700">
+
+            <div className="bg-gray-50 px-4 sm:px-6 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
+              <div className="text-sm text-gray-700 text-center sm:text-left">
                 Showing{" "}
                 <span className="font-medium">{filteredMyStudents.length}</span>{" "}
                 of <span className="font-medium">{myStudents.length}</span>{" "}
@@ -619,7 +677,7 @@ const StudentManagement = () => {
               </div>
               <button
                 onClick={() => fetchMyStudents()}
-                className="flex items-center justify-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+                className="flex items-center justify-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 w-full sm:w-auto"
               >
                 <FaSync className="h-4 w-4 mr-2" />
                 Refresh
