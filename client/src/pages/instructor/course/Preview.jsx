@@ -6,13 +6,13 @@ import { toast } from "react-toastify";
 import YouTube from "react-youtube";
 import Loading from "../../../components/learner/Loading";
 import { AppContext } from "../../../context/AppContext";
-import { 
-  FaChevronDown, 
-  FaEdit, 
-  FaLock, 
-  FaRegFile, 
-  FaDownload, 
-  FaCalendarAlt 
+import {
+  FaChevronDown,
+  FaEdit,
+  FaLock,
+  FaRegFile,
+  FaDownload,
+  FaCalendarAlt,
 } from "react-icons/fa";
 import { MdOutlineDescription } from "react-icons/md";
 
@@ -182,7 +182,7 @@ const Preview = () => {
           >
             <div className="flex items-center gap-3">
               <div className="w-6 h-6 flex items-center justify-center rounded-full bg-gray-100">
-                <FaChevronDown 
+                <FaChevronDown
                   className={`h-4 w-4 text-gray-600 transform transition-transform ${
                     openSections[index] ? "rotate-180" : ""
                   }`}
@@ -193,8 +193,9 @@ const Preview = () => {
               </h3>
             </div>
             <div className="text-sm text-gray-500">
-              {chapter.chapterContent.length} lectures •{" "}
-              {calculateChapterTime(chapter)}
+              {chapter.chapterContent.length} lecture
+              {chapter.chapterContent.length !== 1 ? "s" : ""} •{" "}
+              {calculateChapterTime(chapter) || "Files Only"}
             </div>
           </div>
 
@@ -233,12 +234,14 @@ const Preview = () => {
                       Open
                     </button>
                   )}
-                  <span className="text-xs text-gray-500">
-                    {humanizeDuration(lecture.lectureDuration * 60 * 1000, {
-                      units: ["h", "m"],
-                      round: true,
-                    })}
-                  </span>
+                  {Number(lecture.lectureDuration) > 0 && (
+                    <span className="text-xs text-gray-500">
+                      {humanizeDuration(lecture.lectureDuration * 60 * 1000, {
+                        units: ["h", "m"],
+                        round: true,
+                      })}
+                    </span>
+                  )}
                 </div>
               </div>
             ))}
