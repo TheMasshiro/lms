@@ -6,7 +6,7 @@ import { AppContext } from "../../context/AppContext";
 import { toast } from "react-toastify";
 import axios from "axios";
 import "../css/Navbar.css";
-import { FaCog, FaLock, FaSignInAlt, FaTimes, FaBars } from "react-icons/fa";
+import { FaCog, FaLock, FaSignInAlt, FaTimes, FaBars, FaUnlock, FaStar, FaCrown } from "react-icons/fa";
 import { IoSchool, IoPersonAdd } from "react-icons/io5";
 import { BiAward } from "react-icons/bi";
 import { FiX } from "react-icons/fi";
@@ -109,9 +109,13 @@ const Navbar = () => {
           {!userData?.isMember && user && hasRole && (
             <button
               onClick={openModal}
-              className="px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg hover:from-green-600 hover:to-green-700 transition-all duration-300 shadow-sm hover:shadow-md text-sm font-medium transform hover:-translate-y-0.5"
+              className="p-2 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-full hover:from-emerald-600 hover:to-teal-700 transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-110 group relative"
+              title="Unlock Premium Features"
             >
-              Unlock Full Access
+              <FaCrown className="h-5 w-5 group-hover:animate-pulse" />
+              <span className="absolute -top-1 -right-1 bg-yellow-400 text-yellow-900 text-xs rounded-full w-3 h-3 flex items-center justify-center">
+                ✨
+              </span>
             </button>
           )}
 
@@ -144,9 +148,13 @@ const Navbar = () => {
           {!userData?.isMember && user && hasRole && (
             <button
               onClick={openModal}
-              className="p-1.5 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all duration-300 transform hover:scale-110"
+              className="p-2 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-full hover:from-emerald-600 hover:to-teal-700 transition-all duration-300 transform hover:scale-110 shadow-md hover:shadow-lg relative group"
+              title="Unlock Premium"
             >
-              <FaLock className="h-5 w-5" />
+              <FaCrown className="h-5 w-5 group-hover:animate-pulse" />
+              <span className="absolute -top-1 -right-1 bg-yellow-400 text-yellow-900 text-xs rounded-full w-3 h-3 flex items-center justify-center">
+                ✨
+              </span>
             </button>
           )}
 
@@ -235,7 +243,7 @@ const Navbar = () => {
             className="bg-white rounded-xl overflow-hidden shadow-2xl relative z-10 max-w-md w-full mx-4 modal-bounce-in"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="bg-gradient-to-r from-blue-500 to-cyan-400 p-6">
+            <div className="bg-gradient-to-r from-emerald-500 to-teal-500 p-6">
               <div className="flex justify-between items-center">
                 <h2 className="text-2xl font-bold text-white">
                   {isEducator ? "Educator Membership" : "Student Membership"}
@@ -264,8 +272,8 @@ const Navbar = () => {
                 {isEducator ? (
                   <>
                     <div className="flex items-start mb-4">
-                      <div className="bg-blue-100 p-1.5 rounded-full mr-3 mt-0.5">
-                        <BiAward className="h-5 w-5 text-blue-600" />
+                      <div className="bg-emerald-100 p-1.5 rounded-full mr-3 mt-0.5">
+                        <BiAward className="h-5 w-5 text-emerald-600" />
                       </div>
                       <div>
                         <h3 className="font-medium text-gray-800 mb-1">Unlimited Courses</h3>
@@ -273,20 +281,20 @@ const Navbar = () => {
                       </div>
                     </div>
                     <div className="flex items-start mb-4">
-                      <div className="bg-blue-100 p-1.5 rounded-full mr-3 mt-0.5">
-                        <IoPersonAdd className="h-5 w-5 text-blue-600" />
+                      <div className="bg-emerald-100 p-1.5 rounded-full mr-3 mt-0.5">
+                        <FaCrown className="h-5 w-5 text-emerald-600" />
                       </div>
                       <div>
-                        <h3 className="font-medium text-gray-800 mb-1">Unlimited Students</h3>
-                        <p className="text-gray-600">Add as many students as you need to your courses</p>
+                        <h3 className="font-medium text-gray-800 mb-1">Premium Features</h3>
+                        <p className="text-gray-600">Unlock all premium teaching tools and analytics</p>
                       </div>
                     </div>
                   </>
                 ) : (
                   <>
                     <div className="flex items-start mb-4">
-                      <div className="bg-green-100 p-1.5 rounded-full mr-3 mt-0.5">
-                        <IoSchool className="h-5 w-5 text-green-600" />
+                      <div className="bg-teal-100 p-1.5 rounded-full mr-3 mt-0.5">
+                        <IoSchool className="h-5 w-5 text-teal-600" />
                       </div>
                       <div>
                         <h3 className="font-medium text-gray-800 mb-1">Full Course Access</h3>
@@ -294,8 +302,8 @@ const Navbar = () => {
                       </div>
                     </div>
                     <div className="flex items-start">
-                      <div className="bg-green-100 p-1.5 rounded-full mr-3 mt-0.5">
-                        <BiAward className="h-5 w-5 text-green-600" />
+                      <div className="bg-teal-100 p-1.5 rounded-full mr-3 mt-0.5">
+                        <BiAward className="h-5 w-5 text-teal-600" />
                       </div>
                       <div>
                         <h3 className="font-medium text-gray-800 mb-1">Premium Features</h3>
@@ -306,9 +314,9 @@ const Navbar = () => {
                 )}
 
                 <div 
-                  className="bg-blue-50 p-4 rounded-lg border border-blue-100 mb-6 fade-in-up-delay-2"
+                  className="bg-emerald-50 p-4 rounded-lg border border-emerald-100 mb-6 fade-in-up-delay-2"
                 >
-                  <p className="text-blue-800 font-medium">
+                  <p className="text-emerald-800 font-medium">
                     Would you like to unlock full access and enhance your {isEducator ? "teaching" : "learning"} experience?
                   </p>
                 </div>
@@ -328,7 +336,7 @@ const Navbar = () => {
                       purchaseAccess();
                       toast.info("Redirecting to payment...");
                     }}
-                    className="px-5 py-2.5 bg-gradient-to-r from-blue-500 to-cyan-400 text-white rounded-lg hover:from-blue-600 hover:to-cyan-500 transition-all duration-200 font-medium focus:outline-none hover:shadow-lg transform active:scale-95 hover:scale-105"
+                    className="px-5 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-lg hover:from-emerald-600 hover:to-teal-600 transition-all duration-200 font-medium focus:outline-none hover:shadow-lg transform active:scale-95 hover:scale-105"
                   >
                     Confirm Purchase
                   </button>
