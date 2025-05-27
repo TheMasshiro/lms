@@ -264,11 +264,11 @@ const vPlayer = () => {
     <div className="bg-blue-50 min-h-screen">
       <div className="shadow-sm bg-white">
         <div className="container mx-auto px-4 py-6">
-          <h1 className="text-2xl md:text-3xl font-bold text-gray-800">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800">
             {courseData.courseTitle}
           </h1>
-          <div className="flex items-center mt-2 text-sm text-gray-600">
-            <span className="mr-4">Educator: {courseData.educator.name}</span>
+          <div className="flex flex-col sm:flex-row sm:items-center mt-2 space-y-2 sm:space-y-0 text-sm text-gray-600">
+            <span className="sm:mr-4">Educator: {courseData.educator.name}</span>
             <div className="flex items-center">
               <span className="mr-2">Course Rating:</span>
               <Rating initialRating={initialRating} onRate={handleRate} />
@@ -288,7 +288,7 @@ const vPlayer = () => {
                       <div className="p-4 bg-gray-100 rounded">
                         <iframe
                           src={playerData.lectureUrl}
-                          className="w-full h-96"
+                          className="w-full h-64 sm:h-80 md:h-96"
                           frameBorder="0"
                           allowFullScreen
                         ></iframe>
@@ -302,8 +302,8 @@ const vPlayer = () => {
                       </div>
                     )}
                     <div className="p-4 border-b">
-                      <div className="flex justify-between items-center">
-                        <h2 className="text-xl font-semibold">
+                      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-2 sm:space-y-0">
+                        <h2 className="text-lg sm:text-xl font-semibold">
                           {playerData.chapter}.{playerData.lecture}{" "}
                           {playerData.lectureTitle}
                         </h2>
@@ -311,7 +311,7 @@ const vPlayer = () => {
                           onClick={() =>
                             markLectureAsCompleted(playerData.lectureId)
                           }
-                          className={`px-4 py-1.5 rounded-full text-sm font-medium transition ${
+                          className={`px-4 py-1.5 rounded-full text-sm font-medium transition w-full sm:w-auto ${
                             progressData &&
                             progressData.lectureCompleted.includes(
                               playerData.lectureId
@@ -331,16 +331,16 @@ const vPlayer = () => {
                     </div>
                   </div>
                 ) : (
-                  <div className="flex flex-col items-center justify-center bg-gray-100 aspect-video p-8">
+                  <div className="flex flex-col items-center justify-center bg-gray-100 aspect-video p-4 sm:p-8">
                     <img
                       src={courseData.courseThumbnail}
                       alt={courseData.courseTitle}
-                      className="max-h-48 object-contain mb-4"
+                      className="max-h-32 sm:max-h-48 object-contain mb-4"
                     />
-                    <h3 className="text-xl font-medium text-gray-700 text-center">
+                    <h3 className="text-lg sm:text-xl font-medium text-gray-700 text-center">
                       Select a lecture to start learning
                     </h3>
-                    <p className="text-gray-500 text-center mt-2">
+                    <p className="text-gray-500 text-center mt-2 text-sm sm:text-base">
                       Click on any "Open" button from the course content
                     </p>
                   </div>
@@ -349,33 +349,33 @@ const vPlayer = () => {
                 <div>
                   <div className="p-4 bg-white border-b">
                     <div className="flex justify-between items-center">
-                      <h2 className="text-xl font-semibold text-gray-800">
+                      <h2 className="text-lg sm:text-xl font-semibold text-gray-800">
                         {activeActivity.activityTitle}
                       </h2>
                     </div>
                   </div>
-                  <div className="p-6 bg-white border-b">
+                  <div className="p-4 sm:p-6 bg-white border-b">
                     <div className="prose max-w-none">
                       {activeActivity.activityUrl && (
                         <>
                           <div className="mb-4">
                             <iframe
                               src={activeActivity.activityUrl}
-                              className="w-full h-96"
+                              className="w-full h-64 sm:h-80 md:h-96"
                               allowFullScreen
                             ></iframe>
                           </div>
                           <div className="mt-6">
-                            <h3 className="text-lg font-medium text-gray-800 mb-2">
+                            <h3 className="text-base sm:text-lg font-medium text-gray-800 mb-2">
                               Resources
                             </h3>
                             <a
                               href={activeActivity.activityUrl}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-blue-600 hover:underline flex items-center"
+                              className="text-blue-600 hover:underline flex items-center text-sm sm:text-base"
                             >
-                              <BiDownload className="h-5 w-5 mr-1" />
+                              <BiDownload className="h-4 w-4 sm:h-5 sm:w-5 mr-1" />
                               Download Activity Resource
                             </a>
                           </div>
@@ -385,25 +385,25 @@ const vPlayer = () => {
                   </div>
                 </div>
               ) : (
-                <div className="flex flex-col items-center justify-center bg-gray-100 aspect-video p-8">
-                  <BsFileEarmark className="h-16 w-16 text-gray-400 mb-4" />
-                  <h3 className="text-xl font-medium text-gray-700 text-center">
+                <div className="flex flex-col items-center justify-center bg-gray-100 aspect-video p-4 sm:p-8">
+                  <BsFileEarmark className="h-12 w-12 sm:h-16 sm:w-16 text-gray-400 mb-4" />
+                  <h3 className="text-lg sm:text-xl font-medium text-gray-700 text-center">
                     Select an activity to view
                   </h3>
-                  <p className="text-gray-500 text-center mt-2">
+                  <p className="text-gray-500 text-center mt-2 text-sm sm:text-base">
                     Click on any activity from the list
                   </p>
                 </div>
               )}
 
-              <div className="p-4 bg-gray-50 border-t flex justify-between items-center">
+              <div className="p-4 bg-gray-50 border-t flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-3 sm:space-y-0">
                 <div className="flex items-center">
                   {userData?.isMember ? (
                     <button
                       onClick={() => window.open("/editor", "_blank")}
-                      className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+                      className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition text-sm sm:text-base w-full sm:w-auto justify-center sm:justify-start"
                     >
-                      <FaEdit className="h-5 w-5" />
+                      <FaEdit className="h-4 w-4 sm:h-5 sm:w-5" />
                       Open Editor
                     </button>
                   ) : (
@@ -413,12 +413,12 @@ const vPlayer = () => {
                           "You need to upgrade your membership to access the code editor"
                         )
                       }
-                      className="flex items-center gap-2 px-4 py-2 bg-gray-200 text-gray-600 rounded relative group cursor-default"
+                      className="flex items-center gap-2 px-4 py-2 bg-gray-200 text-gray-600 rounded relative group cursor-default text-sm sm:text-base w-full sm:w-auto justify-center sm:justify-start"
                     >
-                      <FaEdit className="h-5 w-5" />
+                      <FaEdit className="h-4 w-4 sm:h-5 sm:w-5" />
                       <span className="flex items-center">
                         Open Editor
-                        <FaLock className="h-4 w-4 ml-1 text-amber-500" />
+                        <FaLock className="h-3 w-3 sm:h-4 sm:w-4 ml-1 text-amber-500" />
                       </span>
                       <span className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition whitespace-nowrap">
                         Premium feature
@@ -426,19 +426,21 @@ const vPlayer = () => {
                     </button>
                   )}
                 </div>
-                <div className="flex items-center">
-                  <span className="text-sm text-gray-600 mr-2">
+                <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0">
+                  <span className="text-sm text-gray-600 sm:mr-2">
                     Your progress:
                   </span>
-                  <div className="w-48 bg-gray-200 rounded-full h-2.5">
-                    <div
-                      className="bg-blue-600 h-2.5 rounded-full"
-                      style={{ width: `${calculateProgress()}%` }}
-                    ></div>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-32 sm:w-48 bg-gray-200 rounded-full h-2.5">
+                      <div
+                        className="bg-blue-600 h-2.5 rounded-full"
+                        style={{ width: `${calculateProgress()}%` }}
+                      ></div>
+                    </div>
+                    <span className="text-sm font-medium text-gray-700">
+                      {calculateProgress()}%
+                    </span>
                   </div>
-                  <span className="ml-2 text-sm font-medium text-gray-700">
-                    {calculateProgress()}%
-                  </span>
                 </div>
               </div>
             </div>
@@ -448,7 +450,7 @@ const vPlayer = () => {
             <div className="bg-white rounded-lg shadow-md overflow-hidden">
               <div className="flex border-b border-gray-200">
                 <button
-                  className={`flex-1 py-3 text-center font-medium transition ${
+                  className={`flex-1 py-3 text-center font-medium transition text-sm sm:text-base ${
                     activeTab === "content"
                       ? "text-blue-600 border-b-2 border-blue-600"
                       : "text-gray-600 hover:text-gray-800"
@@ -458,7 +460,7 @@ const vPlayer = () => {
                   Course Content
                 </button>
                 <button
-                  className={`flex-1 py-3 text-center font-medium transition ${
+                  className={`flex-1 py-3 text-center font-medium transition text-sm sm:text-base ${
                     activeTab === "activities"
                       ? "text-blue-600 border-b-2 border-blue-600"
                       : "text-gray-600 hover:text-gray-800"
@@ -480,24 +482,23 @@ const vPlayer = () => {
                         className="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50 transition"
                         onClick={() => toggleSection(index)}
                       >
-                        <div className="flex items-center gap-3">
-                          <div className="w-6 h-6 flex items-center justify-center rounded-full bg-gray-100">
+                        <div className="flex items-center gap-3 min-w-0 flex-1">
+                          <div className="w-6 h-6 flex items-center justify-center rounded-full bg-gray-100 flex-shrink-0">
                             <FaChevronDown
                               className={`h-3 w-3 text-gray-600 transform transition-transform ${
                                 openSections[index] ? "rotate-180" : ""
                               }`}
                             />
                           </div>
-                          <h3 className="font-medium text-gray-800">
+                          <h3 className="font-medium text-gray-800 text-sm sm:text-base truncate">
                             {chapter.chapterTitle}
                           </h3>
                         </div>
-                        <div className="text-sm text-gray-500">
-                          {chapter.chapterContent.length} lecture
-                          {chapter.chapterContent.length !== 1
-                            ? "s"
-                            : ""} •{" "}
-                          {calculateChapterTime(chapter) || "Files Only"}
+                        <div className="text-xs sm:text-sm text-gray-500 ml-2 flex-shrink-0">
+                          <div className="text-right">
+                            <div>{chapter.chapterContent.length} lecture{chapter.chapterContent.length !== 1 ? "s" : ""}</div>
+                            <div className="hidden sm:inline">• {calculateChapterTime(chapter) || "Files Only"}</div>
+                          </div>
                         </div>
                       </div>
 
@@ -525,7 +526,7 @@ const vPlayer = () => {
                                   : ""
                               }`}
                             >
-                              <div className="mr-3">
+                              <div className="mr-3 flex-shrink-0">
                                 {isCompleted ? (
                                   <div className="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center">
                                     <FaCheck className="w-3 h-3 text-green-600" />
@@ -536,12 +537,12 @@ const vPlayer = () => {
                                   </div>
                                 )}
                               </div>
-                              <div className="flex-1">
-                                <p className="text-sm text-gray-800">
+                              <div className="flex-1 min-w-0">
+                                <p className="text-sm text-gray-800 truncate">
                                   {lecture.lectureTitle}
                                 </p>
                               </div>
-                              <div className="flex items-center gap-3 ml-2">
+                              <div className="flex flex-col sm:flex-row items-end sm:items-center gap-1 sm:gap-3 ml-2 flex-shrink-0">
                                 {lecture.lectureUrl && (
                                   <button
                                     onClick={() =>
@@ -551,7 +552,7 @@ const vPlayer = () => {
                                         lecture: i + 1,
                                       })
                                     }
-                                    className="text-sm text-blue-600 hover:text-blue-800"
+                                    className="text-xs sm:text-sm text-blue-600 hover:text-blue-800"
                                   >
                                     Open
                                   </button>
@@ -602,14 +603,14 @@ const vPlayer = () => {
                               }`}
                               onClick={() => setActiveActivity(activity)}
                             >
-                              <div className="flex items-center justify-between mb-3">
-                                <div className="flex items-center gap-3">
-                                  <h3 className="font-medium text-gray-800">
+                              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-3 space-y-2 sm:space-y-0">
+                                <div className="flex items-center gap-3 min-w-0">
+                                  <h3 className="font-medium text-gray-800 text-sm sm:text-base truncate">
                                     {activity.activityTitle}
                                   </h3>
                                   {submission && (
                                     <span
-                                      className={`px-2 py-1 text-xs rounded-full ${
+                                      className={`px-2 py-1 text-xs rounded-full flex-shrink-0 ${
                                         submission.status === "graded"
                                           ? "bg-green-100 text-green-700"
                                           : "bg-blue-100 text-blue-700"
@@ -623,21 +624,22 @@ const vPlayer = () => {
                                 </div>
                               </div>
 
-                              <div className="flex items-center justify-between">
+                              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
                                 <div className="flex items-center text-xs text-gray-500">
-                                  <FaCalendarAlt className="h-3 w-3 mr-1" />
+                                  <FaCalendarAlt className="h-3 w-3 mr-1 flex-shrink-0" />
                                   {activity.activityUrl ? (
                                     <a
                                       href={activity.activityUrl}
                                       target="_blank"
                                       rel="noopener noreferrer"
-                                      className="hover:underline"
+                                      className="hover:underline truncate"
                                     >
                                       View File
                                     </a>
                                   ) : (
                                     <span>No file uploaded</span>
-                                  )}
+                                  )
+                                  }
                                 </div>
 
                                 <div className="flex items-center gap-2">
@@ -647,10 +649,11 @@ const vPlayer = () => {
                                         e.stopPropagation();
                                         openViewSubmissionModal(submission);
                                       }}
-                                      className="flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-700 rounded text-xs hover:bg-blue-200 transition"
+                                      className="flex items-center gap-1 px-2 sm:px-3 py-1 bg-blue-100 text-blue-700 rounded text-xs hover:bg-blue-200 transition"
                                     >
                                       <FaEye className="h-3 w-3" />
-                                      View Submission
+                                      <span className="hidden sm:inline">View Submission</span>
+                                      <span className="sm:hidden">View</span>
                                     </button>
                                   ) : (
                                     <button
@@ -658,10 +661,11 @@ const vPlayer = () => {
                                         e.stopPropagation();
                                         openSubmissionModal(activity);
                                       }}
-                                      className="flex items-center gap-1 px-3 py-1 bg-green-100 text-green-700 rounded text-xs hover:bg-green-200 transition"
+                                      className="flex items-center gap-1 px-2 sm:px-3 py-1 bg-green-100 text-green-700 rounded text-xs hover:bg-green-200 transition"
                                     >
                                       <BiUpload className="h-3 w-3" />
-                                      Submit Activity
+                                      <span className="hidden sm:inline">Submit Activity</span>
+                                      <span className="sm:hidden">Submit</span>
                                     </button>
                                   )}
                                 </div>
@@ -673,11 +677,11 @@ const vPlayer = () => {
                     )
                   ) : (
                     <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
-                      <BsFileEarmark className="h-16 w-16 text-gray-300 mb-4" />
-                      <h3 className="text-lg font-medium text-gray-700">
+                      <BsFileEarmark className="h-12 w-12 sm:h-16 sm:w-16 text-gray-300 mb-4" />
+                      <h3 className="text-base sm:text-lg font-medium text-gray-700">
                         No activities found
                       </h3>
-                      <p className="text-gray-500 mt-2">
+                      <p className="text-gray-500 mt-2 text-sm sm:text-base">
                         This course doesn't have any activities yet.
                       </p>
                     </div>
@@ -689,12 +693,11 @@ const vPlayer = () => {
         </div>
       </div>
 
-      {/* Submission Modal */}
       {isSubmissionModalOpen && selectedActivity && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg max-w-md w-full p-6">
+          <div className="bg-white rounded-lg max-w-md w-full p-4 sm:p-6">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold text-gray-800">
+              <h3 className="text-base sm:text-lg font-semibold text-gray-800">
                 Submit Activity
               </h3>
               <button
@@ -724,7 +727,7 @@ const vPlayer = () => {
                   document.getElementById("submission-file-upload").click()
                 }
               >
-                <FaUpload className="mx-auto h-10 w-10 text-gray-400" />
+                <FaUpload className="mx-auto h-8 w-8 sm:h-10 sm:w-10 text-gray-400" />
                 <p className="mt-2 text-sm text-gray-600">
                   {submissionFile
                     ? submissionFile.name
@@ -743,17 +746,17 @@ const vPlayer = () => {
               />
             </div>
 
-            <div className="flex gap-3">
+            <div className="flex flex-col sm:flex-row gap-3">
               <button
                 onClick={closeSubmissionModal}
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition"
+                className="flex-1 px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition text-sm sm:text-base"
               >
                 Cancel
               </button>
               <button
                 onClick={submitActivity}
                 disabled={!submissionFile || isSubmitting}
-                className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition"
+                className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition text-sm sm:text-base"
               >
                 {isSubmitting ? "Submitting..." : "Submit"}
               </button>
@@ -762,12 +765,11 @@ const vPlayer = () => {
         </div>
       )}
 
-      {/* View Submission Modal */}
       {viewSubmissionModal && selectedSubmission && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg max-w-md w-full p-6">
+          <div className="bg-white rounded-lg max-w-md w-full p-4 sm:p-6">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold text-gray-800">
+              <h3 className="text-base sm:text-lg font-semibold text-gray-800">
                 Submission Details
               </h3>
               <button
@@ -834,7 +836,7 @@ const vPlayer = () => {
             <div className="mt-6">
               <button
                 onClick={closeViewSubmissionModal}
-                className="w-full px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition"
+                className="w-full px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition text-sm sm:text-base"
               >
                 Close
               </button>
