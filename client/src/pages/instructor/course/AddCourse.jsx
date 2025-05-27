@@ -221,18 +221,18 @@ const AddCourse = () => {
   };
 
   return isEducator ? (
-    <div className="bg-blue-50 min-h-screen p-8">
+    <div className="bg-blue-50 min-h-screen p-4 sm:p-6 lg:p-8">
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-2xl font-bold text-gray-800 mb-6">
+        <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800 mb-4 sm:mb-6 px-2 sm:px-0">
           Create New Course
         </h1>
 
-        <div className="bg-white p-4 rounded-xl shadow-sm mb-8">
+        <div className="bg-white p-3 sm:p-4 rounded-lg sm:rounded-xl shadow-sm mb-4 sm:mb-6 lg:mb-8">
           <MyStepper currentStep={currentStep} />
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm min-h-screen p-8 pb-24">
-          <div className="max-w-4xl mx-auto">
+        <div className="bg-white rounded-lg sm:rounded-xl shadow-sm min-h-[60vh] sm:min-h-screen p-4 sm:p-6 lg:p-8 pb-16 sm:pb-20 lg:pb-24">
+          <div className="max-w-full sm:max-w-4xl mx-auto">
             <StepWizard
               initialStep={1}
               onStepChange={(stats) => setCurrentStep(stats.activeStep)}
