@@ -8,6 +8,7 @@ import {
   getEducatorCourses,
   getEducatorStudents,
   getEnrolledStudentsData,
+  getStudentProgress,
   getStudents,
   studentEnrolledCourses,
   updateRoleToEducator
@@ -56,5 +57,7 @@ educatorRouter.get("/students", protectEducator, getStudents);
 
 // Get Educator Students Data
 educatorRouter.get("/my-students/", protectEducator, getEducatorStudents);
+
+educatorRouter.get("/student-submissions/:courseId/:studentId", protectEducator, getStudentProgress)
 
 export default educatorRouter;
