@@ -4,6 +4,7 @@ import path from "path";
 import Course from "../models/Course.js";
 import { Purchase } from "../models/Purchase.js";
 import User from "../models/User.js";
+import Submission from "../models/Submission.js";
 
 // update role to educator
 export const updateRoleToEducator = async (req, res) => {
@@ -16,7 +17,7 @@ export const updateRoleToEducator = async (req, res) => {
       },
     });
 
-    res.json({ success: true, message: "Welcome to Learnify" });
+    res.json({ success: true, message: "Welcome to your educator journey! Start creating amazing courses." });
   } catch (error) {
     res.json({ success: false, message: error.message });
   }
@@ -387,6 +388,39 @@ export const getStudents = async (req, res) => {
     res.json({
       success: true,
       students,
+    });
+  } catch (error) {
+    res.json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+export const getStudentProgress = async (req, res) => {
+  try {
+    const { courseId, studentId } = req.params;
+    
+    const course = await Course.findOne({ 
+      _id: courseId, 
+      educator: req.auth.userId 
+    });
+    
+    if (!course) {
+      return res.json({
+        success: false,
+        message: "Course not found or you don't have permission to view this course"
+      });
+    }
+    
+    const submissions = await Submission.find({
+      student: studentId,
+      course: courseId
+    }).sort({ submittedAt: -1 });
+    
+    res.json({
+      success: true,
+      submissions
     });
   } catch (error) {
     res.json({
