@@ -4,6 +4,8 @@ import { Purchase } from "../models/Purchase.js";
 import User from "../models/User.js";
 import axios from "axios";
 import { clerkClient } from "@clerk/express";
+import Submission from "../models/Submission.js";
+import { v2 as cloudinary } from "cloudinary";
 
 // update role to student
 export const updateRoleToStudent = async (req, res) => {
@@ -16,7 +18,7 @@ export const updateRoleToStudent = async (req, res) => {
       },
     });
 
-    res.json({ success: true, message: "Welcome to Learnify" });
+    res.json({ success: true, message: "Welcome to your learning adventure! Explore courses and expand your knowledge." });
   } catch (error) {
     res.json({ success: false, message: error.message });
   }
@@ -509,6 +511,67 @@ export const batchEnrollmentCount = async (req, res) => {
           "The student has reached the maximum enrollment limit for their trial.",
       });
     }
+  } catch (error) {
+    res.json({ success: false, message: error.message });
+  }
+};
+
+// Submit activity
+export const submitActivity = async (req, res) => {
+  try {
+    const { courseId, activityId } = req.body;
+    const userId = req.auth.userId;
+    const submissionFile = req.file;
+
+    if (!submissionFile) {
+      return res.json({ success: false, message: "No file uploaded" });
+    }
+
+    if (!courseId || !activityId) {
+      return res.json({ success: false, message: "Missing required fields" });
+    }
+
+    const existingSubmission = await Submission.findOne({
+      student: userId,
+      course: courseId,
+      activityId: activityId
+    });
+
+    if (existingSubmission) {
+      return res.json({ success: false, message: "Activity already submitted" });
+    }
+    
+    const uploadResult = await cloudinary.uploader.upload(submissionFile.path, {
+      resource_type: "auto",
+      folder: "submissions"
+    });
+
+    const submission = await Submission.create({
+      student: userId,
+      course: courseId,
+      activityId: activityId,
+      submissionUrl: uploadResult.secure_url,
+      status: "submitted"
+    });
+
+    res.json({ success: true, message: "Activity submitted successfully", submission });
+  } catch (error) {
+    res.json({ success: false, message: error.message });
+  }
+};
+
+// Get user submissions for a course
+export const getUserSubmissions = async (req, res) => {
+  try {
+    const { courseId } = req.params;
+    const userId = req.auth.userId;
+
+    const submissions = await Submission.find({
+      student: userId,
+      course: courseId
+    }).sort({ submittedAt: -1 });
+
+    res.json({ success: true, submissions });
   } catch (error) {
     res.json({ success: false, message: error.message });
   }
