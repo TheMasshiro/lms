@@ -12,8 +12,11 @@ import {
   purchaseStatus,
   updateRoleToStudent,
   updateUserCourseProgress,
-  userEnrolledCourses
+  userEnrolledCourses,
+  submitActivity,
+  getUserSubmissions,
 } from "../controllers/userController.js";
+import upload from "../configs/multer.js";
 
 const userRouter = express.Router();
 
@@ -36,5 +39,12 @@ userRouter.post("/add-enrollment-count", addEnrollmentCount);
 
 userRouter.post("/batch-enroll-course", batchEnrollToCourse);
 userRouter.post("/batch-enrollment-count", batchEnrollmentCount);
+
+userRouter.post(
+  "/submit-activity",
+  upload.single("submission"),
+  submitActivity
+);
+userRouter.get("/submissions/:courseId", getUserSubmissions);
 
 export default userRouter;
