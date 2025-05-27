@@ -13,7 +13,8 @@ import {
   Stat,
   StatLabel,
   StatNumber,
-  StatGroup
+  StatGroup,
+  useBreakpointValue
 } from "@chakra-ui/react";
 import { executeCode } from "./configs/api";
 import { FaPlay, FaStop, FaCopy, FaDownload, FaTerminal } from "react-icons/fa";
@@ -35,6 +36,19 @@ const Output = ({ editorRef, language }) => {
   const borderColor = isError ? "red.300" : "gray.300";
   const textColor = isError ? "red.600" : "gray.700";
   const statsBgColor = "#edf2f7";
+
+  const isMobile = useBreakpointValue({ base: true, lg: false });
+  const outputHeight = useBreakpointValue({ 
+    base: "40vh", 
+    sm: "45vh", 
+    md: "50vh", 
+    lg: "60vh", 
+    xl: "65vh" 
+  });
+  const buttonSize = useBreakpointValue({ base: "xs", sm: "sm", md: "md" });
+  const spacing = useBreakpointValue({ base: 3, sm: 4, md: 4 });
+  const fontSize = useBreakpointValue({ base: "xs", sm: "sm", md: "md" });
+  const headingSize = useBreakpointValue({ base: "sm", sm: "md", md: "lg" });
 
   useEffect(() => {
     if (editorRef.current) {
@@ -167,6 +181,7 @@ const Output = ({ editorRef, language }) => {
             borderBottom="1px dashed" 
             borderColor="gray.200" 
             color="gray.700"
+            fontSize={fontSize}
           >
             <Text as="span" color="gray.500" mr={2} fontSize="xs" fontWeight="medium">
               {index + segIndex + 1}
@@ -184,6 +199,8 @@ const Output = ({ editorRef, language }) => {
         borderBottom="1px dashed" 
         borderColor="gray.200" 
         color="gray.700"
+        fontSize={fontSize}
+        wordBreak="break-word"
       >
         <Text as="span" color="gray.500" mr={2} fontSize="xs" fontWeight="medium">
           {index + 1}
@@ -195,48 +212,56 @@ const Output = ({ editorRef, language }) => {
 
   return (
     <Box 
-      w="40%" 
+      w="100%"
       display="flex" 
       flexDirection="column" 
       borderRadius="lg" 
-      boxShadow="sm" 
+      boxShadow="md" 
       border="1px solid" 
       borderColor="gray.300"
       overflow="hidden"
       bg={contentBgColor}
+      mt={{ base: 4, lg: 0 }}
+      height="fit-content"
     >
       <Flex 
         justifyContent="space-between" 
         alignItems="center" 
-        px={4} 
+        px={spacing} 
         py={3}
         borderBottom="1px solid"
         borderColor="gray.300"
         bg={headerBgColor}
-        borderRadius="lg lg 0 0"
+        flexShrink={0}
       >
-        <Heading size="md" fontWeight="semibold" color="gray.700">
-          <Flex alignItems="center">
-            <Icon as={FaTerminal} mr={2} color="gray.600" />
+        <Flex alignItems="center" minW="0" flex="1">
+          <Icon as={FaTerminal} mr={2} color="gray.600" boxSize={{ base: 4, sm: 5 }} />
+          <Heading size={headingSize} fontWeight="semibold" color="gray.700" isTruncated>
             Output
             <Badge 
               ml={2} 
-              fontSize="0.7em"
+              fontSize={{ base: "0.6em", sm: "0.7em" }}
               bg={getBadgeStyles().bg}
               color={getBadgeStyles().color}
               textTransform="lowercase"
               fontWeight="medium"
               borderRadius="md"
-              px={2}
+              px={{ base: 1, sm: 2 }}
               py={0.5}
+              display={{ base: "none", sm: "inline-block" }}
             >
               {language}
             </Badge>
-          </Flex>
-        </Heading>
+          </Heading>
+        </Flex>
         
-        <Flex>
-          <Tooltip label="Run Code (Ctrl+Enter)" openDelay={500} hasArrow placement="top">
+        <Flex gap={{ base: 1, sm: 2 }} flexShrink={0}>
+          <Tooltip 
+            label="Run Code (Ctrl+Enter)" 
+            hasArrow 
+            placement="top"
+            isDisabled={isMobile}
+          >
             <Button
               variant="solid"
               colorScheme="green"
@@ -244,53 +269,71 @@ const Output = ({ editorRef, language }) => {
               isLoading={isLoading}
               loadingText="Running"
               onClick={runCode}
-              mr={2}
-              size="sm"
+              size={buttonSize}
               id="run-code-btn"
-              _hover={{ transform: 'translateY(-2px)', boxShadow: 'md' }}
-              transition="all 0.2s"
+              fontSize={fontSize}
+              px={{ base: 2, sm: 3 }}
             >
-              Run
+              {isMobile ? "" : "Run"}
             </Button>
           </Tooltip>
 
           {output && (
             <>
-              <Tooltip label="Copy Output" openDelay={500} hasArrow placement="top">
+              <Tooltip 
+                label="Copy Output" 
+                hasArrow 
+                placement="top"
+                isDisabled={isMobile}
+              >
                 <Button
                   variant="solid"
                   colorScheme="blue"
                   leftIcon={<FaCopy />}
-                  size="sm"
+                  size={buttonSize}
                   onClick={copyOutput}
-                  mr={2}
+                  fontSize={fontSize}
+                  px={{ base: 2, sm: 3 }}
                 >
-                  Copy
+                  {isMobile ? "" : "Copy"}
                 </Button>
               </Tooltip>
               
-              <Tooltip label="Download Output" openDelay={500} hasArrow placement="top">
+              <Tooltip 
+                label="Download Output" 
+                hasArrow 
+                placement="top"
+                isDisabled={isMobile}
+              >
                 <Button
                   variant="solid"
                   colorScheme="teal"
                   leftIcon={<FaDownload />}
-                  size="sm"
+                  size={buttonSize}
                   onClick={downloadOutput}
-                  mr={2}
+                  fontSize={fontSize}
+                  px={{ base: 2, sm: 3 }}
                 >
-                  Save
+                  {isMobile ? "" : "Save"}
                 </Button>
               </Tooltip>
 
-              <Tooltip label="Clear Output" openDelay={500} hasArrow placement="top">
+              <Tooltip 
+                label="Clear Output" 
+                hasArrow 
+                placement="top"
+                isDisabled={isMobile}
+              >
                 <Button
                   variant="solid"
                   colorScheme="red"
                   leftIcon={<FaStop />}
-                  size="sm"
+                  size={buttonSize}
                   onClick={clearOutput}
+                  fontSize={fontSize}
+                  px={{ base: 2, sm: 3 }}
                 >
-                  Clear
+                  {isMobile ? "" : "Clear"}
                 </Button>
               </Tooltip>
             </>
@@ -300,47 +343,58 @@ const Output = ({ editorRef, language }) => {
 
       {executionTime && (
         <StatGroup 
-          p={2} 
+          p={spacing} 
           bg={statsBgColor} 
           borderBottom="1px solid" 
           borderColor="gray.300"
-          size="sm" 
+          size="sm"
+          flexShrink={0}
         >
           <Stat>
             <Flex alignItems="center">
-              <Icon as={BiTime} mr={1} color="blue.500" />
-              <StatLabel fontSize="xs" color="gray.600">Execution Time</StatLabel>
+              <Icon as={BiTime} mr={1} color="blue.500" boxSize={{ base: 3, md: 4 }} />
+              <StatLabel fontSize={{ base: "xs", md: "sm" }} color="gray.600">
+                {isMobile ? "Time" : "Execution Time"}
+              </StatLabel>
             </Flex>
-            <StatNumber fontSize="sm" color="gray.700">{executionTime} sec</StatNumber>
+            <StatNumber fontSize={{ base: "sm", md: "md" }} color="gray.700">
+              {executionTime} sec
+            </StatNumber>
           </Stat>
           
           <Stat>
             <Flex alignItems="center">
-              <Icon as={BiMemoryCard} mr={1} color="green.500" />
-              <StatLabel fontSize="xs" color="gray.600">Memory Usage</StatLabel>
+              <Icon as={BiMemoryCard} mr={1} color="green.500" boxSize={{ base: 3, md: 4 }} />
+              <StatLabel fontSize={{ base: "xs", md: "sm" }} color="gray.600">
+                {isMobile ? "Memory" : "Memory Usage"}
+              </StatLabel>
             </Flex>
-            <StatNumber fontSize="sm" color="gray.700">{executionStats.memoryUsage}</StatNumber>
+            <StatNumber fontSize={{ base: "sm", md: "md" }} color="gray.700">
+              {executionStats.memoryUsage}
+            </StatNumber>
           </Stat>
           
           <Stat>
             <Flex alignItems="center">
-              <Icon as={BiCodeAlt} mr={1} color="purple.500" />
-              <StatLabel fontSize="xs" color="gray.600">Lines</StatLabel>
+              <Icon as={BiCodeAlt} mr={1} color="purple.500" boxSize={{ base: 3, md: 4 }} />
+              <StatLabel fontSize={{ base: "xs", md: "sm" }} color="gray.600">Lines</StatLabel>
             </Flex>
-            <StatNumber fontSize="sm" color="gray.700">{executionStats.lineCount}</StatNumber>
+            <StatNumber fontSize={{ base: "sm", md: "md" }} color="gray.700">
+              {executionStats.lineCount}
+            </StatNumber>
           </Stat>
         </StatGroup>
       )}
 
       <Box
-        height="75vh"
-        p={3}
+        height={outputHeight}
+        p={spacing}
         color={textColor}
         bg={contentBgColor}
         overflow="auto"
         fontFamily="'Consolas', monospace"
         position="relative"
-        transition="all 0.2s"
+        flex="1"
         css={{
           '&::-webkit-scrollbar': {
             width: '8px',
@@ -360,16 +414,32 @@ const Output = ({ editorRef, language }) => {
       >
         {isLoading ? (
           <Flex height="100%" alignItems="center" justifyContent="center" flexDirection="column">
-            <Spinner size="xl" color="blue.500" thickness="3px" speed="0.8s" mb={4} />
-            <Text color="gray.700">Running your {language} code...</Text>
+            <Spinner 
+              size={{ base: "lg", md: "xl" }} 
+              color="blue.500" 
+              thickness="3px" 
+              speed="0.8s" 
+              mb={4} 
+            />
+            <Text color="gray.700" fontSize={fontSize} textAlign="center" px={4}>
+              Running your {language} code...
+            </Text>
           </Flex>
         ) : output ? (
           output.map((line, i) => renderOutputLine(line, i))
         ) : (
-          <Flex height="100%" alignItems="center" justifyContent="center" flexDirection="column" color="gray.500">
-            <Icon as={FaTerminal} boxSize={10} mb={4} />
-            <Text>Click "Run" to execute your code</Text>
-            <Text fontSize="sm" mt={2}>
+          <Flex 
+            height="100%" 
+            alignItems="center" 
+            justifyContent="center" 
+            flexDirection="column" 
+            color="gray.500"
+            px={4}
+            textAlign="center"
+          >
+            <Icon as={FaTerminal} boxSize={{ base: 8, md: 10 }} mb={4} />
+            <Text fontSize={fontSize}>Click "Run" to execute your code</Text>
+            <Text fontSize={{ base: "xs", md: "sm" }} mt={2}>
               Your output will appear here
             </Text>
           </Flex>
@@ -377,29 +447,30 @@ const Output = ({ editorRef, language }) => {
       </Box>
       
       <Flex 
-        px={4} 
+        px={spacing} 
         py={2} 
         justifyContent="space-between" 
-        fontSize="sm" 
+        fontSize={{ base: "xs", md: "sm" }} 
         color="gray.600" 
         bg={headerBgColor} 
         borderTop="1px solid" 
         borderColor="gray.300"
-        borderRadius="0 0 lg lg"
+        flexShrink={0}
       >
         <Text>
           {output ? output.length : 0} lines output
         </Text>
-        <Flex alignItems="center">
-          <Text mr={2}>
+        <Flex alignItems="center" gap={2}>
+          <Text fontSize={{ base: "xs", md: "sm" }}>
             {isError ? "Execution failed" : executionTime ? "Executed successfully" : "Ready"}
           </Text>
           <Badge 
-            fontSize="xs"
+            fontSize={{ base: "xs", md: "sm" }}
             bg="gray.600" 
             color="white"
             borderRadius="md"
-            px={1.5}
+            px={{ base: 1, sm: 1.5 }}
+            py={0.5}
           >
             Output
           </Badge>
