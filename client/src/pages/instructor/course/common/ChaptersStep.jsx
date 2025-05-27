@@ -30,6 +30,15 @@ const ChaptersStep = (props) => {
     props.setFileInfo({ files });
   }, [chapters, files]);
 
+  const handleContentTypeChange = (type) => {
+    setContentType(type);
+    setLectureDetails({
+      ...lectureDetails,
+      contentType: type,
+      lectureDuration: type === "file" ? "0" : lectureDetails.lectureDuration,
+    });
+  };
+
   const handleChapter = (action, chapterId) => {
     if (action === "add") {
       const title = prompt("Enter Chapter Name:");
@@ -118,14 +127,20 @@ const ChaptersStep = (props) => {
   };
 
   const addLecture = () => {
-    if (!lectureDetails.lectureTitle || !lectureDetails.lectureDuration) {
-      toast.error("Please fill in all required fields.");
+    if (!lectureDetails.lectureTitle) {
+      toast.error("Please enter a lecture title.");
       return;
     }
 
-    if (contentType === "video" && !lectureDetails.lectureUrl) {
-      toast.error("Please enter a YouTube URL.");
-      return;
+    if (contentType === "video") {
+      if (!lectureDetails.lectureDuration) {
+        toast.error("Please enter lecture duration.");
+        return;
+      }
+      if (!lectureDetails.lectureUrl) {
+        toast.error("Please enter a YouTube URL.");
+        return;
+      }
     }
 
     if (contentType === "file" && !lectureDetails.lectureFile) {
@@ -150,6 +165,7 @@ const ChaptersStep = (props) => {
         if (chapter.chapterId === currentChapterId) {
           const newLecture = {
             ...lectureDetails,
+            lectureDuration: contentType === "file" ? "0" : lectureDetails.lectureDuration,
             isPreviewFree: false,
             lectureOrder:
               chapter.chapterContent.length > 0
@@ -267,27 +283,32 @@ const ChaptersStep = (props) => {
                                   {lecture.lectureTitle}
                                 </div>
                                 <div className="text-sm text-gray-500">
-                                  {lecture.lectureDuration} min •{" "}
                                   {lecture.contentType === "file" ? (
-                                    <a
-                                      href={lecture.lectureUrl}
-                                      target="_blank"
-                                      rel="noreferrer"
-                                      className="text-green-500 text-sm hover:underline"
-                                      onClick={(e) => e.stopPropagation()}
-                                    >
-                                      {lecture.fileName || "File Attachment"}
-                                    </a>
+                                    <>
+                                      File •{" "}
+                                      <a
+                                        href={lecture.lectureUrl}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        className="text-green-500 text-sm hover:underline"
+                                        onClick={(e) => e.stopPropagation()}
+                                      >
+                                        {lecture.fileName || "File Attachment"}
+                                      </a>
+                                    </>
                                   ) : (
-                                    <a
-                                      href={lecture.lectureUrl}
-                                      target="_blank"
-                                      rel="noreferrer"
-                                      className="text-blue-500 ml-1 hover:underline"
-                                      onClick={(e) => e.stopPropagation()}
-                                    >
-                                      View YouTube
-                                    </a>
+                                    <>
+                                      {lecture.lectureDuration} min •{" "}
+                                      <a
+                                        href={lecture.lectureUrl}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        className="text-blue-500 ml-1 hover:underline"
+                                        onClick={(e) => e.stopPropagation()}
+                                      >
+                                        View YouTube
+                                      </a>
+                                    </>
                                   )}
                                 </div>
                               </div>
@@ -367,24 +388,26 @@ const ChaptersStep = (props) => {
                 />
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Duration (minutes)
-                </label>
-                <input
-                  type="number"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  value={lectureDetails.lectureDuration}
-                  onChange={(e) =>
-                    setLectureDetails({
-                      ...lectureDetails,
-                      lectureDuration: e.target.value,
-                    })
-                  }
-                  placeholder="e.g. 15"
-                  min="1"
-                />
-              </div>
+              {contentType === "video" && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Duration (minutes)
+                  </label>
+                  <input
+                    type="number"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    value={lectureDetails.lectureDuration}
+                    onChange={(e) =>
+                      setLectureDetails({
+                        ...lectureDetails,
+                        lectureDuration: e.target.value,
+                      })
+                    }
+                    placeholder="e.g. 15"
+                    min="1"
+                  />
+                </div>
+              )}
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -397,7 +420,7 @@ const ChaptersStep = (props) => {
                         ? "text-blue-600 border-b-2 border-blue-600"
                         : "text-gray-500 hover:text-gray-700"
                     }`}
-                    onClick={() => setContentType("video")}
+                    onClick={() => handleContentTypeChange("video")}
                   >
                     YouTube URL
                   </button>
@@ -407,7 +430,7 @@ const ChaptersStep = (props) => {
                         ? "text-blue-600 border-b-2 border-blue-600"
                         : "text-gray-500 hover:text-gray-700"
                     }`}
-                    onClick={() => setContentType("file")}
+                    onClick={() => handleContentTypeChange("file")}
                   >
                     File Attachment
                   </button>
@@ -468,6 +491,7 @@ const ChaptersStep = (props) => {
                           fileName: selectedFile.name,
                           contentType: "file",
                           lectureUrl: URL.createObjectURL(selectedFile),
+                          lectureDuration: "0",
                         });
                       }
                     }}
