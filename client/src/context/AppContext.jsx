@@ -126,6 +126,7 @@ export const AppContextProvider = ({ children }) => {
       const timer = setTimeout(() => {
         fetchUserData();
         fetchUserEnrolledCourses();
+        fetchAllCourses();
       }, 500);
       return () => clearTimeout(timer);
     }
